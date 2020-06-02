@@ -1,0 +1,47 @@
+---
+title: "Introduction to MSanalyzeNOM"
+author: Robert B. Young
+date: "5/30/2020"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages, include = FALSE}
+library(MSanalyzeNOM)
+```
+
+```{r set global options, include = FALSE}
+options(digits = 8)
+```
+
+
+
+
+## Introduction
+
+This document demonstrates R functions in the "MSanalyzeNOM" package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) mixtures after formula assignment. It specifically contains a function for reading sample Excel files exported by PetroOrg&copy; software from the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr/icr-software) (MagLab) in Tallahassee, Florida, USA. The result is _____. Once the data is in this format, the "MSanalyzeNOM" package contains a number of functions for computing values of interest using the assigned elemental compositions and the detected ion abundances, including:
+
+* SN
+* KMD
+* NOSC
+* etc
+
+In addition, the "MSanalyzeNOM" package contains various functions for visualizing the mass spectrometry data of individual samples, and for comparing up to four samples. The package will be updated as new features are added.
+
+
+
+
+## Reading MS Data from the MagLab
+
+[insert]
+
+```{r}
+
+```
+
+
+
+
