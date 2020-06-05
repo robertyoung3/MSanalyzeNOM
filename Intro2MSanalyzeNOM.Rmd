@@ -5,7 +5,7 @@ date: "5/30/2020"
 output: html_notebook
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -17,19 +17,29 @@ library(MSanalyzeNOM)
 options(digits = 8)
 ```
 
+```{r set sample data file location}
+sample_xcel <- system.file("extdata", "DOM_sample_abbrev.xls", package = "MSanalyzeNOM", mustWork = TRUE)
+```
 
 
 
 ## Introduction
 
-This document demonstrates R functions in the "MSanalyzeNOM" package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) mixtures after formula assignment. It specifically contains a function for reading sample Excel files exported by PetroOrg&copy; software from the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr/icr-software) (MagLab) in Tallahassee, Florida, USA. The result is _____. Once the data is in this format, the "MSanalyzeNOM" package contains a number of functions for computing values of interest using the assigned elemental compositions and the detected ion abundances, including:
+This document demonstrates R functions in the {MSanalyzeNOM} package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. Usually, the analyses were  conducted using electrospray ionization in negative ion mode (NegESI), which is the default ion type in the {MSanalyzeNOM} package. Additional features will be added in the future to deal with electrospray ionization in positive ion mode (PosESI), and odd electron ions like those produced during atmospheric pressure photoionization (APPI).
+
+The {MSanalyzeNOM} package contains a function to Excel files exported by PetroOrg&copy; software, which was created at the MagLab for mass calibration, molecular formula (elemental composition) assignment, and other purposes. The function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. The mass spectrometry data are returned as [tibbles](https://tibble.tidyverse.org/), which initially contains the following columns:
+
+* mz
+* etc
+
+After the MS data is in this format, the {MSanalyzeNOM} package contains additional functions to compute numerous values of interest, including:
 
 * SN
 * KMD
 * NOSC
 * etc
 
-In addition, the "MSanalyzeNOM" package contains various functions for visualizing the mass spectrometry data of individual samples, and for comparing up to four samples. The package will be updated as new features are added.
+Finally, the {MSanalyzeNOM} package also contains various functions for visualizing the mass spectrometry data of individual samples, and for comparing samples on the basis of _______. 
 
 
 
@@ -38,8 +48,9 @@ In addition, the "MSanalyzeNOM" package contains various functions for visualizi
 
 [insert]
 
-```{r}
-
+```{r get_sample_data, message = FALSE}
+sample_data <- get_sample_data(sample_xcel)
+head(sample_data[["no_hits"]])
 ```
 
 
