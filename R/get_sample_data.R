@@ -35,19 +35,45 @@ get_sample_data <- function(target_file = file.choose(), ion_technique = "NegESI
                       orig_file_path = target_file,
                       ion_technique = ion_technique,
                       element_list = element_list)
+  ##
   ## (1) read no hits data
   sample_data[["no_hits"]] <- target_file %>%
     readxl::read_excel(sheet = "No Hit", col_names = FALSE, skip = 2) %>%
-    tibble::as_tibble() %>%
     dplyr::select(2, 4)
   colnames(sample_data[["no_hits"]]) <- c("mz", "rel_abund")
+  ##
   ## (2) read assigned formula data
   #### (a) get sheet names
   sheetnames <- readxl::excel_sheets(target_file)
+  ####
   #### (b) subset to exclude isotopes and sheetnames with 3 or more consecutive letters (data summaries)
   sheetnames <- sheetnames[stringr::str_detect(sheetnames, "13C|34S|[[:alpha:]]{3,}", negate = TRUE)]
-  #### (c) read data by mapping through sheet names
-  sample_data[["assigned_formulas"]] <- sheetnames
-  ## return named list
+  ####
+  #### (c) create named vector for mapping
+  names(sheetnames) <- trimws(sheetnames)
+  ####
+  #### (d) read and clean data by mapping through sheet names
+  temp <- sheetnames %>%
+    purrr::map_dfr(~readxl::read_excel(path = target_file, sheet = ., col_names = TRUE, skip = 2), .id = "orig_categ") %>%
+    janitor::clean_names() %>%
+    dplyr::select(-tidyselect::one_of("x1", "exp_m_z", "error", "signal2noise", "dbe", "molecular_formula"),
+                  -tidyselect::ends_with("_c")) %>%
+    dplyr::rename(mz = recal_m_z,
+                  theor_mz = theor_mass,
+                  rel_abund = rel_abundance)
+  ####
+  #### (e) rename element columns with first element in prior column
+  for (i in element_list) {
+    colnames(temp)[which(temp[1,] == i) + 1] <- i
+  }
+  ####
+  #### (f) discard unnamed columns (e.g., "x10")
+  temp <- temp %>%
+    dplyr::select(-tidyselect::matches("x[[:digit:]]+"))
+  ####
+  #### (g) assign temp to sample_data
+  sample_data[["assigned_formulas"]] <- temp
+  ##
+  ## (3)return named list
   return(sample_data)
 }

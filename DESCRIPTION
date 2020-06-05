@@ -14,7 +14,7 @@ RoxygenNote: 7.1.0
 Imports:
     tools,
     magrittr,
-    tibble,
+    tidyselect,
     purrr,
     dplyr,
     readxl,

@@ -51,6 +51,7 @@ Finally, the {MSanalyzeNOM} package also contains various functions for visualiz
 ```{r get_sample_data, message = FALSE}
 sample_data <- get_sample_data(sample_xcel)
 head(sample_data[["no_hits"]])
+head(sample_data[["assigned_formulas"]])
 ```
 
 
