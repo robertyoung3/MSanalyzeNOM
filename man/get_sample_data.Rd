@@ -11,8 +11,8 @@ get_sample_data(
 )
 }
 \arguments{
-\item{target_file}{a character string containing the filename and path for the Excel file created by
-PetroOrg&copy after molecular formula assignment}
+\item{target_file}{a character string containing the filename and path for
+the Excel file created by PetroOrg&copy after molecular formula assignment}
 
 \item{ion_technique}{a character string containing the MS ionization
 technique used (default = NegESI)}
@@ -27,12 +27,12 @@ sample_data a named list containing file and sample information, MS
   detected ions that could not be assigned formulas ("no hits")
 }
 \description{
-This function reads sample Excel files exported by PetroOrg&copy; software
-after molecular formula (i.e., elemental composition) assignment, and returns
-a named list containing file and sample information, selected mass
-spectrometry parameters, mass spectrometry data for the assigned
-molecular formulas, and mass spectrometry data for detected ions that
-could not be assigned molecular formulas ("no hits").
+This function reads sample Excel files exported by the MagLab's PetroOrg
+software after molecular formula (i.e., elemental composition) assignment,
+and returns a named list containing file and sample information, selected
+mass spectrometry parameters, mass spectrometry data for the assigned
+molecular formulas, and mass spectrometry data for detected ions that could
+not be assigned molecular formulas ("no hits").
 }
 \details{
 This function was built for MS data from Fourier transform ion cyclotron
@@ -41,5 +41,6 @@ ion mode (NegESI). This is the default ion type. Because natural organic
 matter (NOM) is generally comprised primarily of the elements C, H, N, O, and
 S, they comprise the default elements used for molecular formula assignment.
 
-If the form of the exported Excel files changes, this function will need revisions.
+If the form of the files exported by PetroOrg changes, this function will
+need revisions.
 }

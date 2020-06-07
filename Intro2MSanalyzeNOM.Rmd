@@ -9,12 +9,12 @@ output: html_notebook
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r load packages, include = FALSE}
-library(MSanalyzeNOM)
-```
-
 ```{r set global options, include = FALSE}
 options(digits = 8)
+```
+
+```{r load packages, include = FALSE}
+library(MSanalyzeNOM)
 ```
 
 ```{r set sample data file location}
@@ -25,35 +25,49 @@ sample_xcel <- system.file("extdata", "DOM_sample_abbrev.xls", package = "MSanal
 
 ## Introduction
 
-This document demonstrates R functions in the {MSanalyzeNOM} package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. Usually, the analyses were  conducted using electrospray ionization in negative ion mode (NegESI), which is the default ion type in the {MSanalyzeNOM} package. Additional features will be added in the future to deal with electrospray ionization in positive ion mode (PosESI), and odd electron ions like those produced during atmospheric pressure photoionization (APPI).
+This document demonstrates R functions in the {MSanalyzeNOM} package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. Usually, the analyses were  conducted using electrospray ionization in negative ion mode (NegESI), which is the default ion type in the {MSanalyzeNOM} package. Additional features will be added to deal with electrospray ionization in positive ion mode (PosESI), and odd electron ions like those produced during atmospheric pressure photoionization (APPI). In addition, the {MSanalyzeNOM} package generally assumes that the detected ions are singly-charged, based on literature describing the ESI-FTICR MS analysis of dissolved NOM (e.g., Stenson et al. 2002). 
 
-The {MSanalyzeNOM} package contains a function to Excel files exported by PetroOrg&copy; software, which was created at the MagLab for mass calibration, molecular formula (elemental composition) assignment, and other purposes. The function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. The mass spectrometry data are returned as [tibbles](https://tibble.tidyverse.org/), which initially contains the following columns:
-
-* mz
-* etc
-
-After the MS data is in this format, the {MSanalyzeNOM} package contains additional functions to compute numerous values of interest, including:
-
-* SN
-* KMD
-* NOSC
-* etc
-
-Finally, the {MSanalyzeNOM} package also contains various functions for visualizing the mass spectrometry data of individual samples, and for comparing samples on the basis of _______. 
-
+The get_sample_data() function mass spectrometry data returns a  [tibble](https://tibble.tidyverse.org/) that contains columns for the experimental mass-to-charge ratio (m/z) and relative abundance of each detected ion. When formulas were assigned, the tibble also includes columns containing the molecular formula, theoretical m/z, computed mass error (in ppm), and a table containing the assigned elements and their numbers. The tibble values are used in additional functions for data summary, analysis and visualization.
 
 
 
 ## Reading MS Data from the MagLab
 
-[insert]
+The {MSanalyzeNOM} package contains a function (get_sample_data) to read Excel files exported by PetroOrg&copy; software, which was created at the MagLab for mass calibration, molecular formula (elemental composition) assignment, and other purposes. The Excel file contains one or more sheets with summary data, a sheet with mass spectrometry data for detected ions that could not be assigned molecular formulas ("no hits"), and numerous sheets containing mass spectrometry data for the assigned molecular formulas, which have been grouped by heteroatom class (the number and identity of heteroatoms contained in the assigned molecular formulas). For example, C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>, C<sub>7</sub>H<sub>12</sub>O<sub>5</sub>, and C<sub>8</sub>H<sub>14</sub>O<sub>5</sub> would be part of the "O5" heteroatom class, and C<sub>11</sub>H<sub>9</sub>NO<sub>6</sub>S would be part of the "N1 O6 S1" heteroatom class.
+
+The get_sample_data() function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. The following example illustrates the data that is provided for the assigned molecular formulas: 
 
 ```{r get_sample_data, message = FALSE}
 sample_data <- get_sample_data(sample_xcel)
-head(sample_data[["no_hits"]])
-head(sample_data[["assigned_formulas"]])
+sample_data$sample_name
+sample_data$ion_technique
+sample_data$element_list
+head(sample_data$assigned_formulas)
+```
+
+The default list of elements includes C, H, N, O and S, but a different element list can be specified if it was used for formula assignment. 
+
+```{r message = FALSE}
+sample_data <- get_sample_data(sample_xcel, element_list = c("C", "H", "N", "O"))
+sample_data[["element_list"]]
+```
+
+Additional details can be examined by typing "?get_sample_data".
+
+```{r, include = FALSE} 
+?get_sample_data
 ```
 
 
 
+## Visualizing the Data from a Single Sample
 
+The next example contains data from a DOM sample with 6,911 assigned molecular formulas.
+
+```{r get_DOM_formulas, include = FALSE}
+rm(sample_xcel, sample_data)
+data("DOM_formulas")
+View(DOM_formulas)
+```
+
+A van Krevelen diagram [insert]
