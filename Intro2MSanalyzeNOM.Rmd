@@ -33,7 +33,7 @@ The get_sample_data() function mass spectrometry data returns a  [tibble](https:
 
 ## Reading MS Data from the MagLab
 
-The {MSanalyzeNOM} package contains a function (get_sample_data) to read Excel files exported by PetroOrg&copy; software, which was created at the MagLab for mass calibration, molecular formula (elemental composition) assignment, and other purposes. The Excel file contains one or more sheets with summary data, a sheet with mass spectrometry data for detected ions that could not be assigned molecular formulas ("no hits"), and numerous sheets containing mass spectrometry data for the assigned molecular formulas, which have been grouped by heteroatom class (the number and identity of heteroatoms contained in the assigned molecular formulas). For example, C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>, C<sub>7</sub>H<sub>12</sub>O<sub>5</sub>, and C<sub>8</sub>H<sub>14</sub>O<sub>5</sub> would be part of the "O5" heteroatom class, and C<sub>11</sub>H<sub>9</sub>NO<sub>6</sub>S would be part of the "N1 O6 S1" heteroatom class.
+The {MSanalyzeNOM} package uses the get_sample_data() function to read Excel files exported by PetroOrg&copy; software, which was created at the MagLab for mass calibration, molecular formula (elemental composition) assignment, and other purposes. The Excel file contains one or more sheets with summary data, a sheet with mass spectrometry data for detected ions that could not be assigned molecular formulas ("no hits"), and numerous sheets containing mass spectrometry data for the assigned molecular formulas, which have been grouped by heteroatom class (the number and identity of heteroatoms contained in the assigned molecular formulas). For example, C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>, C<sub>7</sub>H<sub>12</sub>O<sub>5</sub>, and C<sub>8</sub>H<sub>14</sub>O<sub>5</sub> would be part of the "O5" heteroatom class, and C<sub>11</sub>H<sub>9</sub>NO<sub>6</sub>S would be part of the "N1 O6 S1" heteroatom class.
 
 The get_sample_data() function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. The following example illustrates the data that is provided for the assigned molecular formulas: 
 
@@ -66,8 +66,23 @@ The next example contains data from a DOM sample with 6,911 assigned molecular f
 
 ```{r get_DOM_formulas, include = FALSE}
 rm(sample_xcel, sample_data)
-data("DOM_formulas")
-View(DOM_formulas)
+data("DOM_formulas_abbrev")
+head(DOM_formulas_abbrev)
 ```
 
-A van Krevelen diagram [insert]
+Major biogeochemical classes of chemical compounds, such as lipids and carbohydrates, have characteristic H/C and O/C ratios (Kim et al. 2003). As a result, van Krevelen diagrams, which typically plot H/C vs. O/C ratios, have become an important tool for characterizing NOM. 
+
+The {MSanalyzeNOM} package uses the get_elemental_ratios() function to compute H/C and O/C ratios. The desired numerator (num) and denominator (denom) are passed to the function, and the default denom is "C".
+
+```{r get_elemental_ratios}
+DOM_formulas_abbrev <- DOM_formulas_abbrev %>%
+  get_elemental_ratios(num = "H") %>%
+  get_elemental_ratios(num = "O")
+
+DOM_formulas_abbrev %>%
+  dplyr::select(-hetero_class, 
+                -(mz:S)) %>%
+  head()
+```
+
+[insert]

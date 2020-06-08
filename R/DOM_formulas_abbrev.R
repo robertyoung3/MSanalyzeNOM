@@ -1,9 +1,9 @@
-#' DOM_formulas
+#' DOM_formulas_abbrev
 #'
-#' A dataset containing elemental composition and other data for a DOM sample
+#' An abbreviated dataset containing elemental composition and other data for a DOM sample
 #' analyzed by NegESI FTICR MS.
 #'
-#' @format A tibble with 6119 rows and 11 variables:
+#' @format A tibble with 98 rows and 11 variables:
 #' \itemize{
 #'   \item {hetero_class, the number and identity of heteroatoms in the molecular formula}
 #'   \item {chem_formula, the molecular formula}
@@ -18,5 +18,5 @@
 #'   \item {S, the number of sulfur atoms in the assigned molecular formula}
 #' }
 #' @source personal data
-#' @usage data(DOM_formulas)
-"DOM_formulas"
+#' @usage data(DOM_formulas_abbrev)
+"DOM_formulas_abbrev"

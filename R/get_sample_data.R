@@ -28,8 +28,6 @@
 #'   elemental compositions, and a tibble containing the MS data for all
 #'   detected ions that could not be assigned formulas ("no hits")
 #' @export
-#'
-#' @examples
 get_sample_data <- function(target_file = file.choose(), ion_technique = "NegESI",
                             element_list = c("C", "H", "N", "O", "S")) {
   sample_data <- list(sample_name = tools::file_path_sans_ext(basename(target_file)),
