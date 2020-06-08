@@ -4,22 +4,22 @@
 \alias{get_elemental_ratios}
 \title{get_elemental_ratios}
 \usage{
-get_elemental_ratios(sample_df, num = "H", denom = "C")
+get_elemental_ratios(data, num = "H", denom = "C")
 }
 \arguments{
-\item{sample_df}{a tibble containing the MS data for all assigned elemental compositions}
+\item{data}{a tibble containing the MS data for all assigned elemental compositions}
 
 \item{num}{character string for the element in the numerator (default = "H")}
 
 \item{denom}{character string for the element in the denominator (default = "C")}
 }
 \value{
-sample_df with a column for the computed elemental ratio
+data with a new column containing the computed elemental ratio
 }
 \description{
 get_elemental_ratios
 }
 \examples{
-sample_df <- get_elemental_ratios(DOM_formulas_abbrev)
-head(sample_df)
+df <- get_elemental_ratios(DOM_formulas_abbrev)
+head(df)
 }

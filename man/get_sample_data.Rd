@@ -5,13 +5,13 @@
 \title{get_sample_data}
 \usage{
 get_sample_data(
-  target_file = file.choose(),
+  file = file.choose(),
   ion_technique = "NegESI",
   element_list = c("C", "H", "N", "O", "S")
 )
 }
 \arguments{
-\item{target_file}{a character string containing the filename and path for
+\item{file}{a character string containing the filename and path for
 the Excel file created by PetroOrg&copy after molecular formula assignment}
 
 \item{ion_technique}{a character string containing the MS ionization

@@ -52,11 +52,7 @@ sample_data <- get_sample_data(sample_xcel, element_list = c("C", "H", "N", "O")
 sample_data[["element_list"]]
 ```
 
-Additional details can be examined by typing "?get_sample_data".
-
-```{r, include = FALSE} 
-?get_sample_data
-```
+Additional details can be examined by typing "?get_sample_data" in the R console.
 
 
 
@@ -64,25 +60,27 @@ Additional details can be examined by typing "?get_sample_data".
 
 The next example contains data from a DOM sample with 6,911 assigned molecular formulas.
 
-```{r get_DOM_formulas, include = FALSE}
+```{r, include = FALSE}
 rm(sample_xcel, sample_data)
 data("DOM_formulas_abbrev")
-head(DOM_formulas_abbrev)
 ```
 
 Major biogeochemical classes of chemical compounds, such as lipids and carbohydrates, have characteristic H/C and O/C ratios (Kim et al. 2003). As a result, van Krevelen diagrams, which typically plot H/C vs. O/C ratios, have become an important tool for characterizing NOM. 
 
-The {MSanalyzeNOM} package uses the get_elemental_ratios() function to compute H/C and O/C ratios. The desired numerator (num) and denominator (denom) are passed to the function, and the default denom is "C".
+The {MSanalyzeNOM} package uses the get_elemental_ratios() function to compute H/C and O/C ratios. The desired numerator and denominator (usually C) are passed to the function to create a new column with the desired ratio (e.g., "HtoC").
 
 ```{r get_elemental_ratios}
 DOM_formulas_abbrev <- DOM_formulas_abbrev %>%
   get_elemental_ratios(num = "H") %>%
   get_elemental_ratios(num = "O")
+```
 
+```{r results_get_elemental_ratios, echo = FALSE}
 DOM_formulas_abbrev %>%
   dplyr::select(-hetero_class, 
                 -(mz:S)) %>%
   head()
 ```
+
 
 [insert]

@@ -1,0 +1,9 @@
+get_elemental_ratios
+
+The following code works in dplyr if num and denom are not identified as character strings, but the :- operator is not recognized during CMD_CHECK (probably the {{}} operator is not recognized either)
+
+  data %>% dplyr::mutate(
+    "{{num}}to{{denom}}" := {{num}} / {{denom}}
+  )
+
+The previous code is inspired by https://dplyr.tidyverse.org/articles/programming.html
