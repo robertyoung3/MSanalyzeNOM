@@ -25,7 +25,7 @@ sample_xcel <- system.file("extdata", "DOM_sample_abbrev.xls", package = "MSanal
 
 ## Introduction
 
-This document demonstrates R functions in the {MSanalyzeNOM} package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. Usually, the analyses were  conducted using electrospray ionization in negative ion mode (NegESI), which is the default ion type in the {MSanalyzeNOM} package. Additional features will be added to deal with electrospray ionization in positive ion mode (PosESI), and odd electron ions like those produced during atmospheric pressure photoionization (APPI). In addition, the {MSanalyzeNOM} package generally assumes that the detected ions are singly-charged, based on literature describing the ESI-FTICR MS analysis of dissolved NOM (e.g., Stenson et al. 2002). 
+This document demonstrates R functions in the ***{MSanalyzeNOM}*** package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. Usually, the analyses were  conducted using electrospray ionization in negative ion mode (NegESI), which is the default ion type in the {MSanalyzeNOM} package. Additional features will be added to deal with electrospray ionization in positive ion mode (PosESI), and odd electron ions like those produced during atmospheric pressure photoionization (APPI). In addition, the {MSanalyzeNOM} package generally assumes that the detected ions are singly-charged, based on literature describing the ESI-FTICR MS analysis of dissolved NOM (e.g., Stenson et al. 2002). 
 
 
 
@@ -52,17 +52,19 @@ sample_data[["element_list"]]
 
 Additional details can be examined by typing *"?get_sample_data"* in the R console.
 
+```{r, include = FALSE}
+rm(sample_xcel, sample_data)
+```
+
 
 
 ## Visualizing the Data from a Single Sample
 
-```{r, include = FALSE}
-rm(sample_xcel, sample_data)
-data("DOM_formulas")
-```
-
 Major biogeochemical classes of chemical compounds, such as lipids and carbohydrates, have characteristic H/C and O/C ratios (Kim et al. 2003). As a result, van Krevelen diagrams, which typically plot H/C vs. O/C ratios, have become an important tool for characterizing NOM. 
 
+```{r, include = FALSE}
+data("DOM_formulas")
+```
 
 
 ### 1. Calculating the Elemental Ratios
@@ -85,6 +87,21 @@ DOM_formulas %>%
 
 
 ### 2. Creating a van Krevelen Diagram
+
+A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratios reflect a high degree of saturation, and lower H/C ratios reflect more rings and double bonds. Similarly, O/C ratios reflect the relative presence of hydroxyl, carboxyl and other oxygen functional groups. Accordingly, the area above the horizontal line at H/C = 1.5 has been designated as the aliphatic region in accordance with D'Andrilli et al. 2015 and Lv et al. 2017, and the area below the diagonal line from H/C = 1.1 has been  designated as the aromatic region, based on a modified aromaticity index \geq 0.5 in accordance with Koch & Dittmar 2006.
+
+The following plot, created by the ***make_VK_flat()*** function, shows the distribution of the assigned formulas as a function of their elemental ratios, but contains no information about the intensities of the detected ions. The darker areas are where the highest number of formulas are plotted.
+
+```{r, fig.height = 4.5, fig.width = 5.5}
+make_VK_flat(DOM_formulas, plot_title = "DOM Sample")
+```
+
+The numbers of detected ions and assigned formulas can be influenced by ion suppression, making van Krevelen diagrams from different samples or analyses difficult to compare. In fact, the vast majority of detected ions and assigned formulas occur at relatively low abundances, and are sensitive to ion suppression. For this reason, a color scheme based on a gradient of the assigned formulas' relative abundances doesn't necessarily offer improved resolution.
+
+```{r, fig.height = 4.5, fig.width = 6.5}
+make_VK_grad(DOM_formulas, plot_title = "DOM Sample")
+```
+
 
 
 [insert]

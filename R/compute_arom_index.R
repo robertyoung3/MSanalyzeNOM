@@ -8,7 +8,9 @@
 #' of the oxygen as carboxyl oxygen, rather than carbonyl oxygen, in line with
 #' published NMR data on marine DOM. This increases the number of compounds that
 #' qualify as aromatic or condensed aromatic, but is still more conservative
-#' than RDBE/C ratios.
+#' than RDBE/C ratios. A (modified) aromaticity index >= 0.5 indicates an
+#' aromatic structure, and a (modified) aromaticity index >= 0.67 indicates a
+#' condensed aromatic structure.
 #'
 #' @param sheet a tibble containing MS data, including element numbers for each
 #'   elemental composition (e.g., C = 12, H = 26)
@@ -18,8 +20,6 @@
 #' @return a vector containing the aromaticity index for every elemental
 #'   composition
 #' @export
-#'
-#' @examples
 compute_arom_index <- function (sheet, AItype = "ModAI") {
   if (AItype ==  "ModAI") {
     numerator <- 1 + sheet$C - 0.5* sheet$H - 0.5*sheet$N - 0.5*sheet$O - sheet$S

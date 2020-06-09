@@ -26,5 +26,7 @@ dataset. The calclulations are derived from Koch and Dittmar 2006
 of the oxygen as carboxyl oxygen, rather than carbonyl oxygen, in line with
 published NMR data on marine DOM. This increases the number of compounds that
 qualify as aromatic or condensed aromatic, but is still more conservative
-than RDBE/C ratios.
+than RDBE/C ratios. A (modified) aromaticity index >= 0.5 indicates an
+aromatic structure, and a (modified) aromaticity index >= 0.67 indicates a
+condensed aromatic structure.
 }
