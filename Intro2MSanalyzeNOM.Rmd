@@ -33,13 +33,10 @@ This document demonstrates R functions in the ***{MSanalyzeNOM}*** package for a
 
 The {MSanalyzeNOM} package uses the ***get_sample_data()*** function to read Excel files exported by PetroOrg&copy; software, which was created at the MagLab for mass calibration, molecular formula (elemental composition) assignment, and other purposes. The Excel file contains one or more sheets with summary data, a sheet with mass spectrometry data for detected ions that could not be assigned molecular formulas ("no hits"), and numerous sheets containing mass spectrometry data for the assigned molecular formulas, which have been grouped by heteroatom class (the number and identity of heteroatoms contained in the assigned molecular formulas). For example, C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>, C<sub>7</sub>H<sub>12</sub>O<sub>5</sub>, and C<sub>8</sub>H<sub>14</sub>O<sub>5</sub> would be part of the "O5" heteroatom class, and C<sub>11</sub>H<sub>9</sub>NO<sub>6</sub>S would be part of the "N1 O6 S1" heteroatom class.
 
-The ***get_sample_data()*** function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. The following example illustrates the data that is provided for the assigned molecular formulas: 
+The ***get_sample_data()*** function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. Most of other functions in the {MSanalyzeNOM} package rely on column names produced by the ***get_sample_data()*** function. The following example illustrates the data that is provided for the assigned molecular formulas: 
 
 ```{r get_sample_data, message = FALSE}
 sample_data <- get_sample_data(sample_xcel)
-sample_data$sample_name
-sample_data$ion_technique
-sample_data$element_list
 head(sample_data$assigned_formulas)
 ```
 
@@ -92,16 +89,55 @@ A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratio
 
 The following plot, created by the ***make_VK_flat()*** function, shows the distribution of the assigned formulas as a function of their elemental ratios, but contains no information about the intensities of the detected ions. The darker areas are where the highest number of formulas are plotted.
 
-```{r, fig.height = 4.5, fig.width = 5.5}
+```{r make_VK_flat, fig.height = 4.5, fig.width = 5.5}
 make_VK_flat(DOM_formulas, plot_title = "DOM Sample")
 ```
 
 The numbers of detected ions and assigned formulas can be influenced by ion suppression, making van Krevelen diagrams from different samples or analyses difficult to compare. In fact, the vast majority of detected ions and assigned formulas occur at relatively low abundances, and are sensitive to ion suppression. For this reason, a color scheme based on a gradient of the assigned formulas' relative abundances doesn't necessarily offer improved resolution.
 
-```{r, fig.height = 4.5, fig.width = 6.5}
+```{r make_VK_grad, fig.height = 4.5, fig.width = 6.5}
 make_VK_grad(DOM_formulas, plot_title = "DOM Sample")
 ```
 
+One method for increasing resolution is to group assigned formulas by the proportion of the total assigned abundance that they represent. Put differently, the formulas are ordered from least to most abundant, and all of the formulas that account for the first 25% of total abundance are grouped together (the "bottom 25%"). This continues until four distinct groups have been formed: top 25%, second 25%, third 25%, and bottom 25%). The vast majority of ions comprise the bottom 25%, and the van Krevelen diagram contains sufficient resolution to show where the most abundant assigned formulas congregate.
+
+[create functions for adding perc_abundances, adding cum_perc_abundances and grouping, and arranging and plotting VK diagrams colored by group (make_VK_group_25perc)]
+
+```{r}
+temp_sheet <- temp_sheet %>%
+  mutate(Perc_Rel_Abund = (Rel_Abund/sum(Rel_Abund)) * 100)
+plot_sheet$Cum_Perc_Rel_Abund <- cumsum(plot_sheet$Perc_Rel_Abund) 
+  
+plot_sheet <- plot_sheet %>% 
+  arrange(cum) %>%
+  mutate(Bins = cut(Cum_Perc_Rel_Abund,
+                    breaks = c(0, 25, 50, 75, Inf),
+                    labels = c("Bottom 25%", "Third 25%", "Second 25%", "Top 25%"),
+                    ordered_result = TRUE)) %>%
+  select(-Cum_Perc_Rel_Abund)
+rev_blueGreenPalette <- c("#08306B", "#4292C6", "#9ECAE1", "#C7E9C0")
+blueGreenPalette <- c("#C7E9C0", "#9ECAE1", "#4292C6", "#08306B")
 
 
-[insert]
+##(b) create VK plot using Bins; same size
+# plot width, height for export: 600, 450
+ggplot(data = plot_sheet, aes(x = OtoC, y = HtoC)) +
+  geom_point(aes(color = Bins),size = 1.5, na.rm = TRUE, alpha = 1) + 
+  scale_color_manual(name = "Ranked by\n% Abund.", values = blueGreenPalette) +
+  theme_tufte(base_size = 18, base_family = "sans") + 
+  ggtitle(sample_title) + 
+  labs(x = "O/C", y = "H/C") +
+  scale_x_continuous(limits = c(0, 1.4), breaks = seq(0.0, 1.2, by = 0.3)) + 
+  scale_y_continuous(limits = c(0, 2.5), breaks = seq(0.0, 2.5, by = 0.5)) +
+  guides(color = guide_legend(reverse = TRUE, override.aes = list(size = 4))) +
+  geom_hline(yintercept = 1.5) +
+  geom_abline(intercept = 1.1, slope = -0.48) +
+  theme(plot.title = element_text(size = 20, face = "bold"),
+        legend.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 14), 
+        axis.title = element_text(face = "bold")) +
+  annotate("text", x = 1.3, y = c(1.6, 0.37), label = c("ALIPH", "AROM"), 
+           fontface = 2, size = 5)
+
+```
+
