@@ -16,11 +16,11 @@
 #' @param plot_title a character string containing the sample name
 #'
 #' @importFrom rlang .data
-#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 aes element_text
 #'
 #' @export
 make_VK_flat <- function(data, plot_title = "") {
-  ggplot2::ggplot(data, ggplot2::aes(x = .data$OtoC, y = .data$HtoC)) +
+  ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
     ggplot2::geom_point(size = 1.5, na.rm = TRUE, alpha = 0.3) +
     ggthemes::theme_tufte(base_size = 18, base_family = "sans") +
     ggplot2::ggtitle(plot_title) +

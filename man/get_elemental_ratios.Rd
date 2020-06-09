@@ -17,9 +17,5 @@ get_elemental_ratios(data, num = "H", denom = "C")
 data with a new column containing the computed elemental ratio
 }
 \description{
-get_elemental_ratios
-}
-\examples{
-df <- get_elemental_ratios(DOM_formulas_abbrev)
-head(df)
+This function computes elemental ratios from user-specified elements.
 }
