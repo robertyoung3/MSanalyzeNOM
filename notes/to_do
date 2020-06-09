@@ -1,0 +1,5 @@
+To-do list:
+
+1. replace DOM_sample_abbrev.xls with the full DOM_sample.
+2. pass the sample name as the default plot title.
+3. test for inclusion in the element_list when computing elemental ratios.
