@@ -103,7 +103,20 @@ One alternative for increasing resolution is to group assigned formulas by their
 
 [create functions for adding perc_abundances, adding cum_perc_abundances and grouping, and arranging and plotting VK diagrams colored by group (make_VK_group_25perc)]
 
-```{r make_VK_25perc_groups, fig.height = 4.5, fig.width = 6.5}
-make_VK_25perc_groups(DOM_formulas, plot_title = "DOM Sample")
+```{r get_25perc_groups}
+DOM_formulas <- DOM_formulas %>%
+  get_perc_abund() %>%
+  get_cum_perc_abund() %>%
+  get_25perc_groups()
+```
+
+```{r results_get_25perc_groups, message = FALSE}
+DOM_formulas  %>% 
+  dplyr::group_by(`25perc_group`) %>% 
+  dplyr::summarize(num_formulas = dplyr::n())
+```
+
+```{r, fig.height = 4.5, fig.width = 6.5}
+plot_VK_25perc_groups(DOM_formulas, plot_title = "DOM Sample")
 ```
 
