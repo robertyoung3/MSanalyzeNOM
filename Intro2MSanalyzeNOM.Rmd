@@ -1,31 +1,35 @@
 ---
 title: "Introduction to MSanalyzeNOM"
-author: Robert B. Young
-date: "5/30/2020"
-output: html_notebook
+author: "Robert B. Young"
+date: "6/10/2020"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r set global options, include = FALSE}
+```{r set global options, include=FALSE}
 options(digits = 8)
 ```
 
-```{r load packages, include = FALSE}
+```{r load packages, include=FALSE}
 library(MSanalyzeNOM)
 ```
 
-```{r set sample data file location}
-DOM_xcel <- system.file("extdata", "DOM_Sample.xls", package = "MSanalyzeNOM", mustWork = TRUE)
+```{r set sample data file location, echo=FALSE}
+sample_xcel <- system.file("extdata", "This_is_a_PetroOrg_Excel_file.xls", package = "MSanalyzeNOM", mustWork = TRUE)
 ```
 
 
 
 ## Introduction
 
-This document demonstrates R functions in the ***{MSanalyzeNOM}*** package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. Usually, the analyses were  conducted using electrospray ionization in negative ion mode (NegESI), which is the default ion type in the {MSanalyzeNOM} package. Additional features will be added to deal with electrospray ionization in positive ion mode (PosESI), and odd electron ions like those produced during atmospheric pressure photoionization (APPI). In addition, the {MSanalyzeNOM} package generally assumes that the detected ions are singly-charged, based on literature describing the ESI-FTICR MS analysis of dissolved NOM (e.g., Stenson et al. 2002). 
+This document demonstrates R functions in the **{MSanalyzeNOM}** package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. Usually, the analyses were  conducted using electrospray ionization in negative ion mode (NegESI), which is the default ion type in the {MSanalyzeNOM} package. Additional features will be added to deal with electrospray ionization in positive ion mode (PosESI), and odd electron ions like those produced during atmospheric pressure photoionization (APPI). In addition, the {MSanalyzeNOM} package generally assumes that the detected ions are singly-charged, based on literature describing the ESI-FTICR MS analysis of dissolved NOM (e.g., Stenson et al. 2002). 
 
 
 
@@ -33,29 +37,46 @@ This document demonstrates R functions in the ***{MSanalyzeNOM}*** package for a
 
 The {MSanalyzeNOM} package uses the ***get_sample_data()*** function to read Excel files exported by PetroOrg&copy; software, which was created at the MagLab for mass calibration, molecular formula (elemental composition) assignment, and other purposes. The Excel file contains one or more sheets with summary data, a sheet with mass spectrometry data for detected ions that could not be assigned molecular formulas ("no hits"), and numerous sheets containing mass spectrometry data for the assigned molecular formulas, which have been grouped by heteroatom class (the number and identity of heteroatoms contained in the assigned molecular formulas). For example, C<sub>6</sub>H<sub>10</sub>O<sub>5</sub>, C<sub>7</sub>H<sub>12</sub>O<sub>5</sub>, and C<sub>8</sub>H<sub>14</sub>O<sub>5</sub> would be part of the "O5" heteroatom class, and C<sub>11</sub>H<sub>9</sub>NO<sub>6</sub>S would be part of the "N1 O6 S1" heteroatom class.
 
-The ***get_sample_data()*** function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. Most of other functions in the {MSanalyzeNOM} package rely on column names produced by the ***get_sample_data()*** function. The following example illustrates the data that is provided for the assigned molecular formulas: 
+The ***get_sample_data()*** function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. Most of other functions in the {MSanalyzeNOM} package rely on column names produced by the ***get_sample_data()*** function. 
 
-```{r get_sample_data, message = FALSE}
-DOM_sample <- get_sample_data(DOM_xcel)
+```{r run get_sample_data, message=FALSE}
+# sample_xcel contains the path and filename of a sample Excel file for a DOM sample
+# if no path and filename are given, R's file.choose() function will permit you to choose a file
+DOM_sample <- get_sample_data(sample_xcel)
+```
+
+In particular, the named list contains fields for the sample name, ionization method, and list of elements used for formula assignment. These fields are saved for use in later calculations. For example, the sample name can be used in plot titles, and the ionization method can be used to compute neutral masses for assigned formulas. If no ionization method is specified, the default value is "NegESI" because it is the method we most commonly use at the MagLab.
+
+```{r show sample info, message=FALSE}
 DOM_sample$sample_name
 DOM_sample$ion_technique
 DOM_sample$element_list
 ```
 
-```{r results_get_sample_data, message = FALSE}
+When the sample name is too detailed for a plot title, it can easily be changed.
+
+```{r change sample_name}
+DOM_sample$sample_name <- "Site H - Control (TPIA)"
+DOM_sample$sample_name
+```
+
+The sheet containing the mass spectrometry data for the assigned formulas from PetroOrg&copy; is illustrated below. Much of this information is used to produce new details for data summary and visualization.  
+
+```{r results get_sample_data, message=FALSE}
 head(DOM_sample$assigned_formulas)
 ```
 
-The default list of elements includes C, H, N, O and S, but a different element list can be specified if it was used for formula assignment. 
+The table of elements was created from the list of elements that was used for formula assignment in PetroOrg&copy;. The default list of elements includes C, H, N, O and S, but a different element list can be specified. 
 
-```{r message = FALSE}
-sample_data <- get_sample_data(DOM_xcel, element_list = c("C", "H", "N", "O"))
+```{r change element_list, message=FALSE}
+sample_data <- get_sample_data(sample_xcel, element_list = c("C", "H", "N", "O"))
 sample_data[["element_list"]]
 ```
 
-Additional details can be examined by typing *"?get_sample_data"* in the R console.
+Additional details for the ***get_sample_data()*** function can be examined by typing *"?get_sample_data"* in the R console.
 
-```{r, include = FALSE}
+```{r additional details, include=FALSE}
+?get_sample_data
 rm(sample_data)
 ```
 
@@ -63,20 +84,21 @@ rm(sample_data)
 
 ## Visualizing the Data from a Single Sample
 
-Major biogeochemical classes of chemical compounds, such as lipids and carbohydrates, have characteristic H/C and O/C ratios (Kim et al. 2003). As a result, van Krevelen diagrams, which typically plot H/C vs. O/C ratios, have become an important tool for characterizing NOM. 
+Major biogeochemical classes of chemical compounds, such as lipids and carbohydrates, have characteristic H/C and O/C ratios (Kim et al. 2003). As a result, van Krevelen diagrams, which typically plot H/C vs. O/C ratios, are an important tool for characterizing NOM. 
 
 
 ### 1. Calculating the Elemental Ratios
 
-The {MSanalyzeNOM} package uses the ***get_elemental_ratios()*** function to compute H/C and O/C ratios. The desired numerator and denominator are passed to the function to create a new column with the desired ratio (e.g., "HtoC"). "C" is the default denominator for ***get_elemental_ratios()***.
+The {MSanalyzeNOM} package uses the ***get_elemental_ratios()*** function to compute elemental ratios. The column name is derived from the numerator and denominator that are supplied.  "C" is the default denominator used for van Krevelen diagrams, but different elemental ratios can be used for other purposes. For example, Zark et al. 2017 have developed a method for estimating numbers of carboxyl groups from O/H ratios.
 
 ```{r get_elemental_ratios}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
   get_elemental_ratios(num = "H") %>%
-  get_elemental_ratios(num = "O")
+  get_elemental_ratios(num = "O") %>%
+  get_elemental_ratios(num = "O", denom = "H")
 ```
 
-```{r results_get_elemental_ratios, echo = FALSE}
+```{r results get_elemental_ratios, echo=FALSE}
 DOM_sample$assigned_formulas %>%
   dplyr::select(-hetero_class, 
                 -(mz:S)) %>%
@@ -87,23 +109,21 @@ DOM_sample$assigned_formulas %>%
 
 ### 2. Creating a van Krevelen Diagram
 
-A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratios reflect a high degree of saturation, and lower H/C ratios reflect more rings and double bonds. Similarly, O/C ratios reflect the relative presence of hydroxyl, carboxyl and other oxygen functional groups. Accordingly, the area above the horizontal line at H/C = 1.5 has been designated as the aliphatic region in accordance with D'Andrilli et al. 2015 and Lv et al. 2017, and the area below the diagonal line from H/C = 1.1 has been  designated as the aromatic region, based on a modified aromaticity index \geq 0.5 in accordance with Koch & Dittmar 2006.
+A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratios reflect a high degree of saturation, and low H/C ratios reflect the presence of rings and double bonds. Similarly, high O/C ratios reflect the relative presence of hydroxyl, carboxyl and other oxygen functional groups. Accordingly, the area above the horizontal line at H/C = 1.5 has been designated as the aliphatic region in accordance with D'Andrilli et al. 2015 and Lv et al. 2017, and the area below the diagonal line from H/C = 1.1 has been  designated as the aromatic region, using the modified aromaticity index \ge 0.5 in accordance with Koch & Dittmar 2006.
 
 The following plot, created by the ***make_VK_flat()*** function, shows the distribution of the assigned formulas as a function of their elemental ratios, but contains no information about the intensities of the detected ions. The darker areas are where the highest number of formulas are plotted.
 
-```{r make_VK_flat, fig.height = 4.5, fig.width = 5.5}
+```{r plot_VK_flat, fig.height=4.5, fig.width=6.5}
 plot_VK_flat(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
-The numbers of detected ions and assigned formulas can be influenced by ion suppression, making van Krevelen diagrams from different samples or analyses difficult to compare. In fact, the vast majority of detected ions and assigned formulas occur at relatively low abundances, and are sensitive to ion suppression. In addition, because the vast majority of detected ions and assigned formulas occur at relatively low abundances, a color scheme based on a gradient of the assigned formulas' relative abundances doesn't necessarily improve resolution.
+The numbers of detected ions and assigned formulas can be influenced by ion suppression, making it difficult to compare van Krevelen diagrams from different samples or analyses. In fact, the number of assigned formulas is sensitive to ion suppression because the vast majority of detected ions occur at relatively low abundances. Similarly, coloring a van Krevelen diagram with the assigned formulas' relative abundances doesn't necessarily improve resolution.
 
-```{r make_VK_grad, fig.height = 4.5, fig.width = 6.5}
-plot_VK_grad(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
+```{r plot_VK_gradient, fig.height=4.5, fig.width=6.5}
+plot_VK_gradient(DOM_sample$assigned_formulas, var = "rel_abund", plot_title = DOM_sample$sample_name)
 ```
 
-One alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, the formulas can be ordered from least to most abundant. Then,  the formulas that account for the first 25% of total abundance can be grouped together (the "bottom 25%"), the formulas that account for the next 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In the current example, the vast majority of assigned formulas comprise the bottom 25%, and a comparatively small number of formulas comprise the top 25%. The end result is that the van Krevelen diagram better shows where the most abundant assigned formulas congregate.
-
-[create functions for adding perc_abundances, adding cum_perc_abundances and grouping, and arranging and plotting VK diagrams colored by group (make_VK_group_25perc)]
+One alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In the current example, typical of an NOM sample, the vast majority of assigned formulas comprise the bottom 25%, and a relatively small number of formulas comprise the top 25%. The end result is that the van Krevelen diagram better shows where the most abundant assigned formulas congregate.
 
 ```{r get_25perc_groups}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
@@ -111,13 +131,13 @@ DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
   get_25perc_groups()
 ```
 
-```{r results_get_25perc_groups, message = FALSE}
+```{r results get_25perc_groups, message=FALSE, echo=FALSE}
 DOM_sample$assigned_formulas  %>% 
   dplyr::group_by(`25perc_group`) %>% 
   dplyr::summarize(num_formulas = dplyr::n())
 ```
 
-```{r, fig.height = 4.5, fig.width = 6.5}
+```{r plot_VK_25perc_groups, fig.height=4.5, fig.width=6.5}
 plot_VK_25perc_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 

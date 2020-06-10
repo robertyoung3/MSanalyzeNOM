@@ -1,9 +1,9 @@
-#' plot_VK_grad2
+#' plot_VK_gradient
 #'
 #' This function makes a traditional van Krevelen diagram (H/c vs. O/C). This
 #' plot shows the distribution of the assigned formulas as a function of
 #' elemental ratios, and shows the intensities of the detected ions on a
-#' gradient color scale.
+#' gradient color scale (typically as a function of relative or percent abundance).
 #'
 #' The area above the horizontal line at H/C = 1.5 is designated as the
 #' aliphatic region in accordance with D'Andrilli et al. 2015 and Lv et al.
@@ -19,7 +19,7 @@
 #' @importFrom rlang .data
 #'
 #' @export
-plot_VK_grad2 <- function(data, var, plot_title = "") {
+plot_VK_gradient <- function(data, var, plot_title = "") {
   data <- data %>%
     dplyr::arrange(.data[[var]])
   ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
