@@ -26,11 +26,11 @@ plot_VK_gradient <- function(data, var, plot_title = "") {
   ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
     ggplot2::geom_point(aes(color = .data[[var]]), size = 1.5, na.rm = TRUE, alpha = 0.3) +
     ggplot2::scale_color_gradient(low = "#F7FCF5", high = "#00441B") +
-    ggthemes::theme_tufte(base_size = 18, base_family = "sans") +
-    ggplot2::theme(plot.title = element_text(size = 20, face = "bold"),
+    ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
+    ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
                    axis.title = element_text(face = "bold"),
-                   legend.title = element_text(size = 14, face = "bold"),
-                   legend.text = element_text(size = 14)) +
+                   legend.title = element_text(size = 12, face = "bold"),
+                   legend.text = element_text(size = 12)) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "O/C", y = "H/C") +
     ggplot2::scale_x_continuous(limits = c(0, 1.4), breaks = seq(0.0, 1.2, by = 0.3)) +
@@ -38,5 +38,5 @@ plot_VK_gradient <- function(data, var, plot_title = "") {
     ggplot2::geom_hline(yintercept = 1.5) +
     ggplot2::geom_abline(intercept = 1.1, slope = -0.48) +
     ggplot2:: annotate("text", x = 1.3, y = c(1.6, 0.37), label = c("ALIPH", "AROM"),
-                       fontface = 2, size = 5)
+                       fontface = 2, size = 4)
 }

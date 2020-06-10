@@ -24,11 +24,11 @@ plot_VK_groups <- function(data, var = "25perc_group", plot_title = "") {
   ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
     ggplot2::geom_point(aes(color = .data[[var]]), size = 1.5, na.rm = TRUE, alpha = 0.7) +
     ggplot2::scale_color_brewer(palette = "Greens", direction = -1) +
-    ggthemes::theme_tufte(base_size = 18, base_family = "sans") +
-    ggplot2::theme(plot.title = element_text(size = 20, face = "bold"),
+    ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
+    ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
                    axis.title = element_text(face = "bold"),
                    legend.title = element_blank(),
-                   legend.text = element_text(size = 14)) +
+                   legend.text = element_text(size = 12)) +
     ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 4))) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "O/C", y = "H/C") +
@@ -37,5 +37,5 @@ plot_VK_groups <- function(data, var = "25perc_group", plot_title = "") {
     ggplot2::geom_hline(yintercept = 1.5) +
     ggplot2::geom_abline(intercept = 1.1, slope = -0.48) +
     ggplot2:: annotate("text", x = 1.3, y = c(1.6, 0.37), label = c("ALIPH", "AROM"),
-                       fontface = 2, size = 5)
+                       fontface = 2, size = 4)
 }
