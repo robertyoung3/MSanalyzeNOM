@@ -38,11 +38,15 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
                       ion_technique = ion_technique,
                       element_list = element_list)
 
+  sample_data$sample_name <- stringr::str_replace(sample_data$sample_name,
+                                                  pattern = "_",
+                                                  replacement = " ")
+
   ## (1) read no hits data
   sample_data$no_hits <- file %>%
     readxl::read_excel(sheet = "No Hit", col_names = FALSE, skip = 2) %>%
     dplyr::select(2, 4)
-  colnames(sample_data$no_hits) <- c("mz", "rel_abund")
+  colnames(sample_data$no_hits) <- c("mz", "rel. abund.")
 
   ## (2) read assigned formula data
   #### (a) get sheet names
@@ -63,7 +67,7 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
     dplyr::rename(mz = .data$recal_m_z,
                   theor_mz = .data$theor_mass,
                   ppm_error = .data$error,
-                  rel_abund = .data$rel_abundance)
+                  `rel. abund.` = .data$rel_abundance)
 
   #### (e) rename element columns with first element in prior column
   for (i in element_list) {

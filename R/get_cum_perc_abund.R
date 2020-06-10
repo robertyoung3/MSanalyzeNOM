@@ -11,6 +11,6 @@
 #' @export
 get_cum_perc_abund <- function (data) {
   data %>%
-    dplyr::arrange(.data$perc_abund) %>%
-    dplyr::mutate(cum_perc_abund = cumsum(.data$perc_abund))
+    dplyr::arrange(.data$`perc. abund.`) %>%
+    dplyr::mutate(cum_perc_abund = cumsum(.data$`perc. abund.`))
 }

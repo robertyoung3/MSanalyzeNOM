@@ -13,11 +13,13 @@
 #' @export
 get_25perc_groups <- function(data) {
   data %>%
+    get_cum_perc_abund() %>%
     dplyr::arrange(.data$cum_perc_abund) %>%
     dplyr::mutate(`25perc_group` = cut(.data$cum_perc_abund,
                                        breaks = c(0, 25, 50, 75, Inf),
                                        labels = c("Bottom 25%", "Third 25%", "Second 25%", "Top 25%"),
                                        ordered_result = TRUE)) %>%
     dplyr::mutate(`25perc_group` = factor(.data$`25perc_group`,
-                                          levels = c("Top 25%", "Second 25%", "Third 25%", "Bottom 25%")))
+                                          levels = c("Top 25%", "Second 25%", "Third 25%", "Bottom 25%"))) %>%
+    dplyr::select(-.data$cum_perc_abund)
 }

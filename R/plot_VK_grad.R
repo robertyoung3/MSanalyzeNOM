@@ -19,8 +19,10 @@
 #'
 #' @export
 plot_VK_grad <- function(data, plot_title = "") {
+  data <- data %>%
+    dplyr::arrange(.data$`rel. abund.`)
   ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
-    ggplot2::geom_point(aes(color = .data$rel_abund), size = 1.5, na.rm = TRUE, alpha = 0.3) +
+    ggplot2::geom_point(aes(color = .data$`rel. abund.`), size = 1.5, na.rm = TRUE, alpha = 0.3) +
     ggplot2::scale_color_continuous(name = "rel. abund.", type = "viridis") +
     ggthemes::theme_tufte(base_size = 18, base_family = "sans") +
     ggplot2::ggtitle(plot_title) +

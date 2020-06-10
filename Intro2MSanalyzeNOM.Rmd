@@ -18,7 +18,7 @@ library(MSanalyzeNOM)
 ```
 
 ```{r set sample data file location}
-sample_xcel <- system.file("extdata", "DOM_sample_abbrev.xls", package = "MSanalyzeNOM", mustWork = TRUE)
+DOM_xcel <- system.file("extdata", "DOM_Sample.xls", package = "MSanalyzeNOM", mustWork = TRUE)
 ```
 
 
@@ -36,21 +36,27 @@ The {MSanalyzeNOM} package uses the ***get_sample_data()*** function to read Exc
 The ***get_sample_data()*** function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to detected ions that could not be assigned molecular formulas. Most of other functions in the {MSanalyzeNOM} package rely on column names produced by the ***get_sample_data()*** function. The following example illustrates the data that is provided for the assigned molecular formulas: 
 
 ```{r get_sample_data, message = FALSE}
-sample_data <- get_sample_data(sample_xcel)
-head(sample_data$assigned_formulas)
+DOM_sample <- get_sample_data(DOM_xcel)
+DOM_sample$sample_name
+DOM_sample$ion_technique
+DOM_sample$element_list
+```
+
+```{r results_get_sample_data, message = FALSE}
+head(DOM_sample$assigned_formulas)
 ```
 
 The default list of elements includes C, H, N, O and S, but a different element list can be specified if it was used for formula assignment. 
 
 ```{r message = FALSE}
-sample_data <- get_sample_data(sample_xcel, element_list = c("C", "H", "N", "O"))
+sample_data <- get_sample_data(DOM_xcel, element_list = c("C", "H", "N", "O"))
 sample_data[["element_list"]]
 ```
 
 Additional details can be examined by typing *"?get_sample_data"* in the R console.
 
 ```{r, include = FALSE}
-rm(sample_xcel, sample_data)
+rm(sample_data)
 ```
 
 
@@ -59,23 +65,19 @@ rm(sample_xcel, sample_data)
 
 Major biogeochemical classes of chemical compounds, such as lipids and carbohydrates, have characteristic H/C and O/C ratios (Kim et al. 2003). As a result, van Krevelen diagrams, which typically plot H/C vs. O/C ratios, have become an important tool for characterizing NOM. 
 
-```{r, include = FALSE}
-data("DOM_formulas")
-```
-
 
 ### 1. Calculating the Elemental Ratios
 
 The {MSanalyzeNOM} package uses the ***get_elemental_ratios()*** function to compute H/C and O/C ratios. The desired numerator and denominator are passed to the function to create a new column with the desired ratio (e.g., "HtoC"). "C" is the default denominator for ***get_elemental_ratios()***.
 
 ```{r get_elemental_ratios}
-DOM_formulas <- DOM_formulas %>%
+DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
   get_elemental_ratios(num = "H") %>%
   get_elemental_ratios(num = "O")
 ```
 
 ```{r results_get_elemental_ratios, echo = FALSE}
-DOM_formulas %>%
+DOM_sample$assigned_formulas %>%
   dplyr::select(-hetero_class, 
                 -(mz:S)) %>%
   head()
@@ -90,13 +92,13 @@ A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratio
 The following plot, created by the ***make_VK_flat()*** function, shows the distribution of the assigned formulas as a function of their elemental ratios, but contains no information about the intensities of the detected ions. The darker areas are where the highest number of formulas are plotted.
 
 ```{r make_VK_flat, fig.height = 4.5, fig.width = 5.5}
-make_VK_flat(DOM_formulas, plot_title = "DOM Sample")
+plot_VK_flat(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
 The numbers of detected ions and assigned formulas can be influenced by ion suppression, making van Krevelen diagrams from different samples or analyses difficult to compare. In fact, the vast majority of detected ions and assigned formulas occur at relatively low abundances, and are sensitive to ion suppression. In addition, because the vast majority of detected ions and assigned formulas occur at relatively low abundances, a color scheme based on a gradient of the assigned formulas' relative abundances doesn't necessarily improve resolution.
 
 ```{r make_VK_grad, fig.height = 4.5, fig.width = 6.5}
-make_VK_grad(DOM_formulas, plot_title = "DOM Sample")
+plot_VK_grad(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
 One alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, the formulas can be ordered from least to most abundant. Then,  the formulas that account for the first 25% of total abundance can be grouped together (the "bottom 25%"), the formulas that account for the next 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In the current example, the vast majority of assigned formulas comprise the bottom 25%, and a comparatively small number of formulas comprise the top 25%. The end result is that the van Krevelen diagram better shows where the most abundant assigned formulas congregate.
@@ -104,19 +106,18 @@ One alternative for increasing resolution is to group assigned formulas by their
 [create functions for adding perc_abundances, adding cum_perc_abundances and grouping, and arranging and plotting VK diagrams colored by group (make_VK_group_25perc)]
 
 ```{r get_25perc_groups}
-DOM_formulas <- DOM_formulas %>%
+DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
   get_perc_abund() %>%
-  get_cum_perc_abund() %>%
   get_25perc_groups()
 ```
 
 ```{r results_get_25perc_groups, message = FALSE}
-DOM_formulas  %>% 
+DOM_sample$assigned_formulas  %>% 
   dplyr::group_by(`25perc_group`) %>% 
   dplyr::summarize(num_formulas = dplyr::n())
 ```
 
 ```{r, fig.height = 4.5, fig.width = 6.5}
-plot_VK_25perc_groups(DOM_formulas, plot_title = "DOM Sample")
+plot_VK_25perc_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
