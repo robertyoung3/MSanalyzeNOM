@@ -6,4 +6,4 @@ The following code works in dplyr if num and denom are not identified as charact
     "{{num}}to{{denom}}" := {{num}} / {{denom}}
   )
 
-The previous code is inspired by https://dplyr.tidyverse.org/articles/programming.html
+If character strings are passed and the .data[[num]] format is used, the quotes get into the new column name

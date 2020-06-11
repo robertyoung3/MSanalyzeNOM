@@ -43,7 +43,7 @@ The *get_sample_data()* function returns a named list containing file and sample
 
 ```{r run get_sample_data, message=FALSE}
 # sample_xcel contains the path and filename of a sample Excel file for a DOM
-# sample if no path and filename are given, R's file.choose() function will
+# sample. if no path and filename are given, R's file.choose() function will
 # permit you to choose a file
 DOM_sample <- get_sample_data(sample_xcel)
 ```
@@ -75,6 +75,7 @@ DOM_sample$sample_name
 The sheet containing the mass spectrometry data for the assigned formulas from PetroOrg&copy; is illustrated below. Much of this information is used to produce new details for data summary and visualization.  
 
 ```{r results get_sample_data, message=FALSE}
+View(DOM_sample$assigned_formulas)
 head(DOM_sample$assigned_formulas)
 ```
 
@@ -139,19 +140,44 @@ plot_VK_flat(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
 
-2. *Color Gradient (Poor Resolution of Abundance)*
+2. *Color Gradient*
 
-The numbers of detected ions and assigned formulas can be influenced by ion suppression, making it difficult to compare van Krevelen diagrams from different samples or analyses. In fact, the number of assigned formulas is sensitive to ion suppression because the vast majority of detected ions occur at relatively low abundances. Similarly, coloring a van Krevelen diagram with the assigned formulas' relative abundances doesn't necessarily improve resolution.
+The numbers of detected ions and assigned formulas can be influenced by ion suppression, making it difficult to compare van Krevelen diagrams from different samples or analyses. In fact, the number of assigned formulas is sensitive to ion suppression because the vast majority of detected ions occur at relatively low abundances. 
+
+Similarly, When a few assigned formulas are detected at comparatively high abundances, coloring a van Krevelen diagram with a gradient based on their relative abundances doesn't necessarily improve resolution. If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them if the figure is appropriately annotated.
 
 ```{r plot_VK_gradient, fig.height=3.5, fig.width=5}
 plot_VK_gradient(DOM_sample$assigned_formulas, var = "rel_abund", 
                  plot_title = DOM_sample$sample_name)
 ```
 
+In the preceding figure, the two most abundant compounds appear to be linear alkylbenzene sulfonate (LAS) surfactants, and the next two most abundant are stearic and palmitic acids. All of them are common laboratory contaminants. The next few appear to be xanthones, which are known plant compounds.
 
-3. *Grouped by %Contribution to Abundance (Better Resolution of Abundance)*
+```{r most abundant formulas, message=FALSE}
+DOM_sample$assigned_formulas  %>% 
+  dplyr::select(hetero_class:rel_abund) %>%
+  dplyr::arrange(dplyr::desc(rel_abund)) %>%
+  head(n = 10)
+```
 
-One alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". 
+Without the LAS surfactants and the stearic and palmitic acids, the van Krevelen diagram offers far better resolution. 
+
+```{r replot VK_gradient, fig.height=3.5, fig.width=5}
+# assigned_formulas and new_assigned_formulas should be segregated if saving
+# DOM_sample
+DOM_sample$new_assigned_formulas <- DOM_sample$assigned_formulas  %>% 
+  dplyr::filter(!chem_formula %in% c("C17H28O3S1", "C18H30O3S1", "C18H36O2", "C16H32O2")) %>%
+  # normalize rel_abund to new highest value
+  dplyr::mutate(rel_abund = rel_abund / max(rel_abund) * 100)
+plot_VK_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund", 
+                 plot_title = DOM_sample$sample_name)
+```
+
+
+
+3. *Grouped by %Contribution to Abundance*
+
+Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". 
 
 ```{r get_25perc_groups}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
@@ -159,15 +185,16 @@ DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
   get_25perc_groups()
 ```
 
-In the current example, typical of an NOM sample, the vast majority of assigned formulas comprise the bottom 25%, and a relatively small number of formulas comprise the top 25%. The end result is that the van Krevelen diagram better shows where the most abundant assigned formulas congregate.
-
-```{r results get_25perc_groups, message=FALSE, echo=FALSE}
-DOM_sample$assigned_formulas  %>% 
-  dplyr::group_by(`25perc_group`) %>% 
-  dplyr::summarize(num_formulas = dplyr::n())
-```
-
 ```{r plot_VK_25perc_groups, fig.height=3.5, fig.width=5}
 plot_VK_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
+
+This plot can be supplemented with data on the number of formulas in each category.
+
+```{r data get_25perc_groups, message=FALSE}
+DOM_sample$assigned_formulas  %>% 
+  dplyr::group_by(`25perc_group`) %>% 
+  dplyr::rename(group = `25perc_group`) %>%
+  dplyr::summarize(`formulas` = dplyr::n())
+```

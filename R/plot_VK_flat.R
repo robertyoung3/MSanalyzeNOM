@@ -21,7 +21,7 @@
 #' @export
 plot_VK_flat <- function(data, plot_title = "") {
   ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
-    ggplot2::geom_point(size = 1.5, na.rm = TRUE, alpha = 0.1) +
+    ggplot2::geom_point(size = 1, na.rm = TRUE, alpha = 0.1) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
                    axis.title = element_text(face = "bold"),

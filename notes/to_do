@@ -1,3 +1,9 @@
 To-do list:
 
-1. test for inclusion in the element_list when computing elemental ratios.
+1. test for inclusion in the element_list when computing elemental ratios: is there a need?
+2. create function to eliminate LAS and other known laboratory contaminants once KMD series have been computed
+3. perform a study comparing KMD_CH2 and theor_KMD_CH2 after they have been computed
+   a) look for overlap in nearby groups
+   b) group by theor_KMD_CH2, and examine the spread of KMD_CH2
+   c) if overlap, eliminate conflicts and assign formulas to the most abundant of the remaining compounds?
+   d) goal is to use results for formula assignment by KMD_CF2
