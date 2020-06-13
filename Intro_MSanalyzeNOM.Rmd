@@ -1,10 +1,10 @@
 ---
 title: "Introduction to MSanalyzeNOM"
 author: "Robert B. Young"
-date: "6/10/2020"
+date: "6/11/2020"
 output:
-  pdf_document: default
   html_notebook: default
+  pdf_document: default
   html_document:
     df_print: paged
   word_document: default
@@ -92,7 +92,7 @@ sample_data[["element_list"]]
 
 #### Additional Details
 
-Additional details for the ***get_sample_data()*** function can be examined by typing *"?get_sample_data"* in the R console.
+Additional details for the *get_sample_data()* function can be examined by typing *"?get_sample_data"* in the R console.
 
 ```{r additional details, include=FALSE}
 ?get_sample_data
@@ -108,7 +108,7 @@ Major biogeochemical classes of chemical compounds, such as lipids and carbohydr
 
 #### Calculating the Elemental Ratios
 
-The MSanalyzeNOM package uses the ***get_elemental_ratios()*** function to compute elemental ratios. The column name is derived from the numerator and denominator that are supplied.  "C" is the default denominator used for van Krevelen diagrams, but different elemental ratios can be used for other purposes. For example, Zark et al. 2017 have developed a method for estimating numbers of carboxyl groups from O/H ratios.
+The MSanalyzeNOM package uses the *get_elemental_ratios()* function to compute elemental ratios. The column name is derived from the numerator and denominator that are supplied.  "C" is the default denominator used for van Krevelen diagrams, but different elemental ratios can be used for other purposes. For example, Zark et al. 2017 have developed a method for estimating numbers of carboxyl groups from O/H ratios.
 
 ```{r get_elemental_ratios}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
@@ -133,25 +133,25 @@ A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratio
 
 1. *Flat Diagram (No Information on Abundance)*
 
-The following plot, created by the ***make_VK_flat()*** function, shows the distribution of the assigned formulas as a function of their elemental ratios, but contains no information about the intensities of the detected ions. The darker areas are where the highest number of formulas are plotted.
+The following plot, created by the *plot_VK_flat()* function, shows the distribution of the assigned formulas as a function of their elemental ratios, but contains no information about the intensities of the detected ions. The darker areas are where the highest number of formulas are plotted.
 
 ```{r plot_VK_flat, fig.height=3.5, fig.width=4}
 plot_VK_flat(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
 
-2. *Color Gradient*
+2. *Color Gradient Based on Relative Abundances*
 
 The numbers of detected ions and assigned formulas can be influenced by ion suppression, making it difficult to compare van Krevelen diagrams from different samples or analyses. In fact, the number of assigned formulas is sensitive to ion suppression because the vast majority of detected ions occur at relatively low abundances. 
 
-Similarly, When a few assigned formulas are detected at comparatively high abundances, coloring a van Krevelen diagram with a gradient based on their relative abundances doesn't necessarily improve resolution. If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them if the figure is appropriately annotated.
+The *plot_VK_gradient()* function creates a van Krevelen diagram colored with a gradient based on their relative abundances. However, when a few assigned formulas are detected at comparatively high abundances, coloring the van Krevelen diagram in this way doesn't necessarily improve resolution. 
 
 ```{r plot_VK_gradient, fig.height=3.5, fig.width=5}
 plot_VK_gradient(DOM_sample$assigned_formulas, var = "rel_abund", 
                  plot_title = DOM_sample$sample_name)
 ```
 
-In the preceding figure, the two most abundant compounds appear to be linear alkylbenzene sulfonate (LAS) surfactants, and the next two most abundant are stearic and palmitic acids. All of them are common laboratory contaminants. The next few appear to be xanthones, which are known plant compounds.
+If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them as long as the figure is appropriately annotated. In the preceding figure, the two most abundant compounds appear to be linear alkylbenzene sulfonate (LAS) surfactants, and the next two most abundant appear to be stearic and palmitic acids. All of them are common laboratory contaminants. 
 
 ```{r most abundant formulas, message=FALSE}
 DOM_sample$assigned_formulas  %>% 
@@ -177,7 +177,7 @@ plot_VK_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund",
 
 3. *Grouped by %Contribution to Abundance*
 
-Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". 
+Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In this case, the high abundance laboratory contaminants are usually grouped with the most abundant natural compounds, and their effect on the appearance of the most abundant natural compounds is limited.
 
 ```{r get_25perc_groups}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
@@ -185,16 +185,7 @@ DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
   get_25perc_groups()
 ```
 
+The *plot_VK_25perc_groups()* function creates a van Krevelen diagram that is colored on this basis.
+
 ```{r plot_VK_25perc_groups, fig.height=3.5, fig.width=5}
-plot_VK_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
-```
-
-
-This plot can be supplemented with data on the number of formulas in each category.
-
-```{r data get_25perc_groups, message=FALSE}
-DOM_sample$assigned_formulas  %>% 
-  dplyr::group_by(`25perc_group`) %>% 
-  dplyr::rename(group = `25perc_group`) %>%
-  dplyr::summarize(`formulas` = dplyr::n())
-```
+plot_VK_groups(DOM_sample$assigned

@@ -22,7 +22,7 @@
 #' @export
 plot_VK_groups <- function(data, var = "25perc_group", plot_title = "") {
   ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
-    ggplot2::geom_point(aes(color = .data[[var]]), size = 1, na.rm = TRUE, alpha = 0.7) +
+    ggplot2::geom_point(aes(color = .data[[var]]), size = 1, na.rm = TRUE, alpha = 0.8) +
     # Green-Blue color scheme should work for color-blind people
     # https://venngage.com/blog/color-blind-friendly-palette/
     ggplot2::scale_color_brewer(palette = "GnBu", direction = -1) +

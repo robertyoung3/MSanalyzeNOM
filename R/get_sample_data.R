@@ -65,16 +65,19 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
                   ppm_error = .data$error,
                   rel_abund = .data$rel_abundance)
 
-  #### (e) rename element columns with first element in prior column
+  #### (e) convert hetero_class from characters to factors
+  temp$hetero_class <- factor(temp$hetero_class)
+
+  #### (f) rename element columns with first element in prior column
   for (i in element_list) {
     colnames(temp)[which(temp[1,] == i) + 1] <- i
   }
 
-  #### (f) discard unnamed columns (e.g., "x10")
+  #### (g) discard unnamed columns (e.g., "x10")
   temp <- temp %>%
     dplyr::select(-tidyselect::matches("x[[:digit:]]+"))
 
-  #### (g) generate molecular formulas & strip empty elements
+  #### (h) generate molecular formulas & strip empty elements
   temp$chem_formula <- ""
   for (i in element_list) {
     temp$chem_formula <- temp$chem_formula %>%
@@ -82,11 +85,11 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
       stringr::str_replace(stringr::str_c(i, "0"), "")
   }
 
-  #### (h) reorder columns
+  #### (i) reorder columns
   temp <- temp %>%
     dplyr::select(.data$hetero_class, .data$chem_formula, tidyselect::everything())
 
-  #### (i) assign temp to sample_data
+  #### (j) assign temp to sample_data
   sample_data$assigned_formulas <- temp
 
   ## (3)return named list
