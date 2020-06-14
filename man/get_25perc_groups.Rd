@@ -10,7 +10,7 @@ get_25perc_groups(data)
 \item{data}{a tibble containing the assigned molecular formulas}
 }
 \value{
-data with a new column containing the "25perc_group" to which each
+data with a new column containing the 25% group to which each
   assigned formula belongs
 }
 \description{

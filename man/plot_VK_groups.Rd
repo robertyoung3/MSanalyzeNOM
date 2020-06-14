@@ -4,13 +4,13 @@
 \alias{plot_VK_groups}
 \title{plot_VK_groups}
 \usage{
-plot_VK_groups(data, var = "25perc_group", plot_title = "")
+plot_VK_groups(data, var = "group_25perc", plot_title = "")
 }
 \arguments{
 \item{data}{a tibble containing the assigned molecular formulas}
 
 \item{var}{a character string containing the group factor column that will be
-used to provide color (default = 25perc_group)}
+used to provide color (default = group_25perc)}
 
 \item{plot_title}{a character string containing the sample name}
 }

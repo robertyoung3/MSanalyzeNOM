@@ -13,14 +13,14 @@
 #'
 #' @param data a tibble containing the assigned molecular formulas
 #' @param var a character string containing the group factor column that will be
-#'   used to provide color (default = 25perc_group)
+#'   used to provide color (default = group_25perc)
 #' @param plot_title a character string containing the sample name
 #'
 #' @importFrom rlang .data
 #' @importFrom ggplot2 aes element_text element_blank
 #'
 #' @export
-plot_VK_groups <- function(data, var = "25perc_group", plot_title = "") {
+plot_VK_groups <- function(data, var = "group_25perc", plot_title = "") {
   ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
     ggplot2::geom_point(aes(color = .data[[var]]), size = 1, na.rm = TRUE, alpha = 0.8) +
     # Green-Blue color scheme should work for color-blind people

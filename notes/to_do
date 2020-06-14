@@ -12,6 +12,7 @@ To-do list:
 10. compute aromaticity indexes
 11. compute NOSC
 12. create Kroll diagram
+13. compute estimated carboxyls
 
 3. perform a study comparing KMD_CH2 and theor_KMD_CH2 after they have been computed
    a) look for overlap in nearby groups

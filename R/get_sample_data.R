@@ -56,17 +56,18 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
 
   #### (d) read and clean data by mapping through sheet names
   temp <- sheetnames %>%
-    purrr::map_dfr(~readxl::read_excel(path = file, sheet = ., col_names = TRUE, skip = 2), .id = "hetero_class") %>%
+    purrr::map_dfr(~readxl::read_excel(path = file, sheet = ., col_names = TRUE, skip = 2), .id = "class_hetero") %>%
     janitor::clean_names() %>%
-    dplyr::select(-tidyselect::one_of("x1", "exp_m_z", "signal2noise", "dbe", "molecular_formula"),
+    dplyr::select(-tidyselect::one_of("x1", "exp_m_z", "signal2noise", "molecular_formula"),
                   -tidyselect::ends_with("_c")) %>%
     dplyr::rename(mz = .data$recal_m_z,
                   theor_mz = .data$theor_mass,
                   ppm_error = .data$error,
-                  rel_abund = .data$rel_abundance)
+                  rel_abund = .data$rel_abundance,
+                  DBE = .data$dbe)
 
-  #### (e) convert hetero_class from characters to factors
-  temp$hetero_class <- factor(temp$hetero_class)
+  #### (e) convert class_hetero from characters to factors
+  temp$class_hetero <- factor(temp$class_hetero)
 
   #### (f) rename element columns with first element in prior column
   for (i in element_list) {
@@ -87,7 +88,7 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
 
   #### (i) reorder columns
   temp <- temp %>%
-    dplyr::select(.data$hetero_class, .data$chem_formula, tidyselect::everything())
+    dplyr::select(.data$class_hetero, .data$chem_formula, tidyselect::everything())
 
   #### (j) assign temp to sample_data
   sample_data$assigned_formulas <- temp
