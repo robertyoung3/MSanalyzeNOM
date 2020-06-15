@@ -11,8 +11,8 @@ get_sample_data(
 )
 }
 \arguments{
-\item{file}{a character string containing the filename and path for
-the Excel file created by PetroOrg&copy after molecular formula assignment}
+\item{file}{a character string containing the filename and path for the Excel
+file created by PetroOrg&copy after molecular formula assignment}
 
 \item{ion_technique}{a character string containing the MS ionization
 technique used (default = NegESI)}
@@ -21,18 +21,15 @@ technique used (default = NegESI)}
 for molecular formula assignments (default = C, H, N, O, S)}
 }
 \value{
-sample_data a named list containing file and sample information, MS
-  parameter information, a tibble containing the MS data for all assigned
-  elemental compositions, and a tibble containing the MS data for all
-  detected ions that could not be assigned formulas ("no hits")
+sample_data a named list containing 8 elements
 }
 \description{
 This function reads sample Excel files exported by the MagLab's PetroOrg
 software after molecular formula (i.e., elemental composition) assignment,
 and returns a named list containing file and sample information, selected
 mass spectrometry parameters, mass spectrometry data for the assigned
-molecular formulas, and mass spectrometry data for detected ions that could
-not be assigned molecular formulas ("no hits").
+molecular formulas, mass spectrometry data for detected ions that could not
+be assigned molecular formulas ("no hits"), and a table of all detected ions.
 }
 \details{
 This function was built for MS data from Fourier transform ion cyclotron

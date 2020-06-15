@@ -13,6 +13,6 @@ get_cum_perc_abund(data)
 data with a new column containing the cumulative percent abundances
 }
 \description{
-This function arranges percent abundances from least to greatest and computes
-their cumulative percent abundances.
+This internal function arranges percent abundances from least to greatest and computes
+their cumulative percent abundances. It is called by get_25perc_groups.
 }

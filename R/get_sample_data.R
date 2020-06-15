@@ -4,8 +4,8 @@
 #' software after molecular formula (i.e., elemental composition) assignment,
 #' and returns a named list containing file and sample information, selected
 #' mass spectrometry parameters, mass spectrometry data for the assigned
-#' molecular formulas, and mass spectrometry data for detected ions that could
-#' not be assigned molecular formulas ("no hits").
+#' molecular formulas, mass spectrometry data for detected ions that could not
+#' be assigned molecular formulas ("no hits"), and a table of all detected ions.
 #'
 #' This function was built for MS data from Fourier transform ion cyclotron
 #' resonance (FTICR) mass spectrometry using electrospray ionization in negative
@@ -16,8 +16,8 @@
 #' If the form of the files exported by PetroOrg changes, this function will
 #' need revisions.
 #'
-#' @param file a character string containing the filename and path for
-#'   the Excel file created by PetroOrg&copy after molecular formula assignment
+#' @param file a character string containing the filename and path for the Excel
+#'   file created by PetroOrg&copy after molecular formula assignment
 #' @param ion_technique a character string containing the MS ionization
 #'   technique used (default = NegESI)
 #' @param element_list a character vector containing the elements that were used
@@ -25,10 +25,7 @@
 #'
 #' @importFrom rlang .data
 #'
-#' @return sample_data a named list containing file and sample information, MS
-#'   parameter information, a tibble containing the MS data for all assigned
-#'   elemental compositions, and a tibble containing the MS data for all
-#'   detected ions that could not be assigned formulas ("no hits")
+#' @return sample_data a named list containing 8 elements
 #' @export
 get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
                             element_list = c("C", "H", "N", "O", "S")) {
@@ -93,6 +90,10 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
   #### (j) assign temp to sample_data
   sample_data$assigned_formulas <- temp
 
-  ## (3)return named list
+  ## (3) generate table of all detected ions
+  sample_data$all_detected_ions <- get_all_detected_ions(sample_data$no_hits,
+                                                         sample_data$assigned_formulas)
+
+  ## (4)return named list
   return(sample_data)
 }
