@@ -3,6 +3,7 @@
 export("%>%")
 export(compute_arom_index)
 export(get_25perc_groups)
+export(get_CHNOS_element_class)
 export(get_cum_perc_abund)
 export(get_elemental_ratios)
 export(get_perc_abund)
