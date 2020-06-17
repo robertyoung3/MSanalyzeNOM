@@ -1,0 +1,37 @@
+plot_mass_spectrum
+
+  temp <- DOM_sample$all_detected_ions
+
+  min_x <- NULL
+  max_x <- NULL
+
+  min_x <- 250
+  max_x <- NULL
+
+  min_x <- NULL
+  max_x <- 400
+
+
+  min_x <- 250
+  max_x <- 251
+
+# case_when evaluates every function; problem if min_x or max_x = NULL
+  x_ticks <- dplyr::case_when(
+    is.null(min_x) & is.null(max_x) ~ pretty(temp$mz),
+    is.null(min_x) ~ pretty(min(temp$mz):max_x),
+    is.null(max_x) ~ pretty(min_x:max(temp$mz)),
+    TRUE ~  pretty(min_x:max_x)
+  )
+
+
+# nested if else works
+  if (!is.null(min_x) & !is.null(max_x)) {
+    x_ticks <- pretty(min_x:max_x)
+  } else if (is.null(min_x) & !is.null(max_x)) {
+    x_ticks <- pretty(min(temp$mz):max_x)
+  } else if (!is.null(min_x) & is.null(max_x)) {
+    x_ticks <- pretty(min_x:max(temp$mz))
+  } else {
+    x_ticks <- pretty(temp$mz)
+  }
+

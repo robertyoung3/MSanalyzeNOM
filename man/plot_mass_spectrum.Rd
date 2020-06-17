@@ -4,20 +4,25 @@
 \alias{plot_mass_spectrum}
 \title{plot_mass_spectrum}
 \usage{
-plot_mass_spectrum(data, plot_title, max_x = NULL)
+plot_mass_spectrum(data, plot_title, min_x = NULL, max_x = NULL)
 }
 \arguments{
 \item{data}{a tibble containing the assigned molecular formulas}
 
 \item{plot_title}{a character string containing the sample name}
 
-\item{max_x}{a numeric containing the maximum x value to plot (default =
+\item{min_x}{a numeric containing the minimum mz value to plot (default =
+NULL)}
+
+\item{max_x}{a numeric containing the maximum mz value to plot (default =
 NULL)}
 }
 \value{
 
 }
 \description{
-This function plots the sample mass spectrum.The maximum x value can be
-specified to produce figures for multiple samples on the same scale.
+This function plots the sample mass spectrum.The maximum mz value can be
+specified to produce figures for multiple samples on the same scale. Also,
+the minimum and maximum mz values can be specified to plot a specific region
+of the mass spectrum.
 }
