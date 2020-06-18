@@ -1,5 +1,13 @@
 plot_mass_spectrum
 
+I wanted to be able to scale multiple the x-axis to fit a larger range than the data when comparing 2 samples, so I created the x_ticks variable. When max_x - min_x < 1, it seems to have trouble, so I bypassed it in this condition.
+
+If the x_ticks extend beyond the data, the plot should still extend to the x_ticks (not happening). Data range 150:596. x_ticks range 100:800. plot 100:600. x_ticks worked with filter was not applied, but abundances were derived from full sample. Maybe plotting together will apply the common axis.
+
+
+
+# test nested if else and case_when
+
   temp <- DOM_sample$all_detected_ions
 
   min_x <- NULL

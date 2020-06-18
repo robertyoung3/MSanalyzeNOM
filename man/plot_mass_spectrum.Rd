@@ -21,8 +21,6 @@ NULL)}
 
 }
 \description{
-This function plots the sample mass spectrum.The maximum mz value can be
-specified to produce figures for multiple samples on the same scale. Also,
-the minimum and maximum mz values can be specified to plot a specific region
-of the mass spectrum.
+This function plots the sample mass spectrum.The minimum and maximum mz
+values can be specified to plot a specific region of the mass spectrum.
 }
