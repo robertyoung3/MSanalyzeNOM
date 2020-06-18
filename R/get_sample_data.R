@@ -20,7 +20,7 @@
 #'   file created by PetroOrg&copy after molecular formula assignment
 #' @param ion_technique a character string containing the MS ionization
 #'   technique used (default = NegESI)
-#' @param element_list a character vector containing the elements that were used
+#' @param elements_used a character vector containing the elements that were used
 #'   for molecular formula assignments (default = C, H, N, O, S)
 #'
 #' @importFrom rlang .data
@@ -28,12 +28,12 @@
 #' @return sample_data a named list containing 8 elements
 #' @export
 get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
-                            element_list = c("C", "H", "N", "O", "S")) {
+                            elements_used = c("C", "H", "N", "O", "S")) {
   sample_data <- list(sample_name = tools::file_path_sans_ext(basename(file)),
                       file_name = basename(file),
                       orig_file_path = file,
                       ion_technique = ion_technique,
-                      element_list = element_list)
+                      elements_used = elements_used)
 
   ## (1) read no hits data
   sample_data$no_hits <- file %>%
@@ -67,7 +67,7 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
   temp$class_hetero <- factor(temp$class_hetero)
 
   #### (f) rename element columns with first element in prior column
-  for (i in element_list) {
+  for (i in elements_used) {
     colnames(temp)[which(temp[1,] == i) + 1] <- i
   }
 
@@ -77,7 +77,7 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
 
   #### (h) generate molecular formulas & strip empty elements
   temp$chem_formula <- ""
-  for (i in element_list) {
+  for (i in elements_used) {
     temp$chem_formula <- temp$chem_formula %>%
       stringr::str_c(i, temp[[i]]) %>%
       stringr::str_replace(stringr::str_c(i, "0"), "")

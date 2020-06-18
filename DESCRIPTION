@@ -5,8 +5,9 @@ Version: 0.1.0
 Author: Robert B. Young
 Maintainer: The package maintainer <robertyoung3@gmail.com>
 Description: 
-    More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+    Natural organic matter (NOM) samples are highly complex, containing numerous chemical formulas within the space of a single mass unit, and groups of chemical formulas that differ only in carbon chain length (CH2 repeating units) or degree of oxidation. Using mass spectrometry, it is common to detect thousands of singly-charged ions within a relatively small mass range (e.g., m/z 200 - 800), requiring ultra-high mass resolution. Because Fourier transform ion cyclotron resonance mass spectrometry (FTICR MS) achieves such resolution, NOM and hydrocarbon samples are commonly analyzed by FTICR MS.
+    This package was created to facilitate the characterization and visualization of such data in R, but only after chemical formulas have been assigned to a subset of the detected ions by other means. In our case, the chemical formulas were assigned using PetroOrg software from the National High Magnetic Field Laboratory in Tallahassee, Florida, USA. As a result, the package also contains a function to read the Excel files exported by PetroOrg.
+    The utilities are mostly written with tidyverse functions and pipes to make the logic easier to follow.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -19,8 +20,10 @@ Imports:
     tidyselect,
     purrr,
     dplyr,
+    tidyr,
     readxl,
     stringr,
+    forcats,
     janitor,
     ggplot2,
     ggthemes

@@ -11,7 +11,7 @@ get_25perc_groups(data)
 }
 \value{
 data with a new column containing the 25% group to which each
-  assigned formula belongs
+  assigned formula belongs, ordered from "Top 25%" to "Bottom 25%".
 }
 \description{
 This function groups assigned formulas into four groups ("top 25%", "second

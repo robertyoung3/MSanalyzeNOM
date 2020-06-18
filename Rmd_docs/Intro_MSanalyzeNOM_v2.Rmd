@@ -4,10 +4,6 @@ author: "Robert B. Young"
 date: "6/11/2020"
 output:
   html_notebook: default
-  pdf_document: default
-  html_document:
-    df_print: paged
-  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -56,7 +52,7 @@ In particular, the named list contains fields for the sample name, ionization me
 ```{r show sample info, message=FALSE}
 DOM_sample$sample_name
 DOM_sample$ion_technique
-DOM_sample$element_list
+DOM_sample$elements_used
 ```
 
 
@@ -65,7 +61,7 @@ DOM_sample$element_list
 When the sample name is too detailed for a plot title, it can easily be changed.
 
 ```{r change sample_name}
-DOM_sample$sample_name <- "Site 1 - Control (TPIA)"
+DOM_sample$sample_name <- "DOM Sample 1"
 DOM_sample$sample_name
 ```
 
@@ -83,9 +79,9 @@ head(DOM_sample$assigned_formulas)
 
 The table of elements was created from the list of elements that was used for formula assignment in PetroOrg&copy;. The default list of elements includes C, H, N, O and S, but a different element list can be specified. 
 
-```{r change element_list, message=FALSE}
-sample_data <- get_sample_data(sample_xcel, element_list = c("C", "H", "N", "O"))
-sample_data[["element_list"]]
+```{r change elements_used, message=FALSE}
+sample_data <- get_sample_data(sample_xcel, elements_used = c("C", "H", "N", "O"))
+sample_data[["elements_used"]]
 ```
 
 
@@ -103,7 +99,7 @@ rm(sample_data)
 
 #### Elemental Classes
 
-The elemental class (e.g., CHO or CHNOS) is useful for examining the assigned formulas based on their elemental content. For the default element list, the ** function assigns elemental classes to the assigned formulas.
+The elemental class (e.g., CHO or CHNOS) is useful for examining the assigned formulas as a function of their elemental content. The MSanalyzeNOM package uses the *get_CHNOS_element_class()* function to assign elemental classes for the default element list.
 
 ```{r get_CHNOS_element_class}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
@@ -116,6 +112,81 @@ DOM_sample$assigned_formulas %>%
   head()
 ```
 
+```{r count elemental class members, message=FALSE}
+DOM_sample$assigned_formulas %>%  
+  get_perc_abund() %>%
+  dplyr::group_by(class_element) %>%
+  dplyr::summarize(n = dplyr::n(), 
+                   abund = sum(perc_abund))
+```
+
+
+#### DBE/C Ratios
+
+[Estimate of aromaticity; Need computations for DBE & DBE/C]
+
+The number of double bond equivalents (DBE) is the estimated number of rings and double bonds in a chemical compound. The basic calculation is:
+
+>$$DBE = 1 + \frac{\sum_{i=1}^{n}N_i\left(V_i - 2\right)}{2}$$
+>**where:**  
+>$N_i$ = number of atom $i$  
+>$V_i$ = valence of atom $i$  
+
+A simpler calculation for several comment elements is the following:
+
+>$$DBE = 1 - \frac{a}{2} + \frac{c}{2} + d$$  
+>**where:**  
+>$a$ = number of atoms with a valence of 1 (H, F, Cl, Br)  
+>$b$ = number of atoms with a valency of 2 (O, S)  
+>$c$ = number of atoms with a valency of 3 (N, P)  
+>$d$ = number of atoms with a valency of 4 (C, Si) 
+
+The basic DBE calculation has been [criticized](https://fiehnlab.ucdavis.edu/projects/seven-golden-rules/ring-double-bonds) because it fails to take multiple valence states into account. 
+
+The MSanalyzeNOM package imports DBE values from PetroOrg&copy;, but they can also be computed using the *compute_DBE()* function. 
+
+```{r compute_DBE}
+# see about using element list to extract and row_across to sum; maybe also element list to select elements and valences
+```
+
+The DBE/C ratio estimates aromaticity by examining DBE as a function of the number of carbons. In this approach, DBE/C $\ge$ 0.5 suggests an aromatic structure, and DBE/C $\ge$ 0.67 suggests a condensed aromatic structure. In the MSanalyzeNOM package, the *compute_DBEtoC()* function calculates this ratio.
+
+```{r compute_DBEtoC}
+
+```
+
+
+#### Aromaticity/Modified Aromaticity Index
+
+The aromaticity index (AI) created by Koch & Dittmar (2006) offers a more conservative estimate of aromaticity than DBE/c because oxygen and other heteroatoms are deemed to form double bonds. Similar to the DBE/C ratio, AI $\ge$ 0.5 suggests an aromatic structure, and AI $\ge$ 0.67 suggests a condensed aromatic structure.
+
+Because dissolved organic matter (DOM) frequently shows high carboxyl content when analyzed by NMR, the modified aromaticity index (ModAI) treats one-half of the oxygen as carboxyl oxygen, rather than carbonyl oxygen. This increases the number of compounds that qualify as aromatic or condensed aromatic, but is still more conservative than DBE/C ratios. 
+
+The MSanalyze NOM package uses the *compute_arom_index()* function to compute the aromaticity/modified aromaticity index based on the specified AItype (default = "ModAI").
+
+```{r compute_arom_index}
+
+```
+
+```{r compute_arom_index compare DBEtoC, AI & ModAI}
+# Can facets be created when there is overlap?
+```
+
+
+#### AvgOSC (NOSC)
+
+[]
+
+
+#### Kendrick Mass Defect
+
+[]
+
+
+#### z score
+
+[use z_CF2 with KMD_CF2 for PFCs]
+
 
 #### Useful Elemental Ratios
 
@@ -125,6 +196,7 @@ The MSanalyzeNOM package uses the *get_elemental_ratios()* function to compute e
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
   get_elemental_ratios(num = "H") %>%
   get_elemental_ratios(num = "O") %>%
+  get_elemental_ratios(num = "N") %>%
   get_elemental_ratios(num = "O", denom = "H")
 ```
 
@@ -136,7 +208,7 @@ DOM_sample$assigned_formulas %>%
 ```
 
 
-#### Kendrick Mass Defect
+#### Estimated Carboxyl Content
 
 []
 
@@ -145,41 +217,14 @@ DOM_sample$assigned_formulas %>%
 
 #### Mass Spectrum
 
-[]
+The mass spectrum plots the relative abundances of all detected ions, assigned and unassigned, and gives the least selective view of what could be ionized in the sample. However, it should be noted that sample preparation and ionization methods are also selective. The MSanalyzeNOM package uses the *plot_mass_spectrum()* function to plot a sample's mass spectrum.  
 
 ```{r plot_mass_spectrum}
 plot_mass_spectrum(DOM_sample$all_detected_ions, 
                    plot_title = DOM_sample$sample_name)
 ```
 
-
-
-#### van Krevelen Diagrams (H/C vs. O/C)
-
-A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratios reflect a high degree of saturation, and low H/C ratios reflect the presence of rings and double bonds. Similarly, high O/C ratios reflect the relative presence of hydroxyl, carboxyl and other oxygen functional groups. Accordingly, the area above the horizontal line at H/C = 1.5 has been designated as the aliphatic region in accordance with D'Andrilli et al. 2015 and Lv et al. 2017, and the area below the diagonal line from H/C = 1.1 has been  designated as the aromatic region, using the modified aromaticity index $\ge$ 0.5 in accordance with Koch & Dittmar 2006.
-
-
-1. *Flat Diagram (No Information on Abundance)*
-
-The following plot, created by the *plot_VK_flat()* function, shows the distribution of the assigned formulas as a function of their elemental ratios, but contains no information about the intensities of the detected ions. The darker areas are where the highest number of formulas are plotted.
-
-```{r plot_VK_flat, fig.height=3.5, fig.width=4}
-plot_VK_flat(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
-```
-
-
-2. *Color Gradient Based on Relative Abundances*
-
-The numbers of detected ions and assigned formulas can be influenced by ion suppression, making it difficult to compare van Krevelen diagrams from different samples or analyses. In fact, the number of assigned formulas is sensitive to ion suppression because the vast majority of detected ions occur at relatively low abundances. 
-
-The *plot_VK_gradient()* function creates a van Krevelen diagram colored with a gradient based on their relative abundances. However, when a few assigned formulas are detected at comparatively high abundances, coloring the van Krevelen diagram in this way doesn't necessarily improve resolution. 
-
-```{r plot_VK_gradient, fig.height=3.5, fig.width=5}
-plot_VK_gradient(DOM_sample$assigned_formulas, var = "rel_abund", 
-                 plot_title = DOM_sample$sample_name)
-```
-
-If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them as long as the figure is appropriately annotated. In the preceding figure, the two most abundant compounds appear to be linear alkylbenzene sulfonate (LAS) surfactants, and the next two most abundant appear to be stearic and palmitic acids. All of them are common laboratory contaminants. 
+NOM usually looks like a skewed Gaussian peak. As a result, any high abundance ions are at least suspected laboratory contaminants. In the preceding figure, the two most abundant compounds appear to be linear alkylbenzene sulfonate (LAS) surfactants, and the next two most abundant appear to be stearic and palmitic acids (which can be observed in high quality methanol).
 
 ```{r most abundant formulas, message=FALSE}
 DOM_sample$assigned_formulas  %>% 
@@ -188,43 +233,17 @@ DOM_sample$assigned_formulas  %>%
   head(n = 10)
 ```
 
-Without the LAS surfactants and the stearic and palmitic acids, the van Krevelen diagram offers far better resolution. 
+[remove contaminants and replot]
 
-```{r replot VK_gradient, fig.height=3.5, fig.width=5}
-# assigned_formulas and new_assigned_formulas should be segregated if saving
-# DOM_sample
-DOM_sample$new_assigned_formulas <- DOM_sample$assigned_formulas  %>% 
-  dplyr::filter(!chem_formula %in% c("C17H28O3S1", "C18H30O3S1", "C18H36O2", "C16H32O2")) %>%
-  # normalize rel_abund to new highest value
-  dplyr::mutate(rel_abund = rel_abund / max(rel_abund) * 100)
-plot_VK_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund", 
-                 plot_title = DOM_sample$sample_name)
+The *plot_mass_spectrum()* function contains optional parameters (min_x and max_x) to zoom in on a particular range in the mass spectrum. The m/z values were centroided in PetroOrg&copy;, so the abundances and spacing of the detected ions are clear, but not their mass resolution, which can be examined using [Predator Analysis](https://nationalmaglab.org/user-facilities/icr/icr-software) or PetroOrg&copy; software.
+
+```{r plot_mass_spectrum narrow, message=FALSE, fig.height=3.5, fig.width=5}
+plot_mass_spectrum(DOM_sample$all_detected_ions, 
+                   plot_title = DOM_sample$sample_name,
+                   min_x = 250.9, max_x = 251.2)
 ```
 
 
+#### van Krevelen Diagrams (H/C vs. O/C)
 
-3. *Grouped by %Contribution to Abundance*
-
-Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In this case, the high abundance laboratory contaminants are usually grouped with the most abundant natural compounds, and their effect on the appearance of the most abundant natural compounds is limited.
-
-```{r get_25perc_groups}
-DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
-  get_perc_abund() %>%
-  get_25perc_groups()
-```
-
-The *plot_VK_25perc_groups()* function creates a van Krevelen diagram that is colored on this basis.
-
-```{r plot_VK_25perc_groups, fig.height=3.5, fig.width=5}
-plot_VK_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
-```
-
-
-This plot can be supplemented with data on the number of formulas in each category.
-
-```{r data get_25perc_groups, message=FALSE}
-DOM_sample$assigned_formulas  %>% 
-  dplyr::group_by(group_25perc) %>% 
-  dplyr::rename(group = group_25perc) %>%
-  dplyr::summarize(`formulas` = dplyr::n())
-```
+A traditional van Krevelen diagram plots O/C vs. H/C. In general, high H/C ratios reflect a high degree of saturation,

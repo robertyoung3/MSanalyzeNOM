@@ -7,7 +7,7 @@
 get_sample_data(
   file = file.choose(),
   ion_technique = "NegESI",
-  element_list = c("C", "H", "N", "O", "S")
+  elements_used = c("C", "H", "N", "O", "S")
 )
 }
 \arguments{
@@ -17,7 +17,7 @@ file created by PetroOrg&copy after molecular formula assignment}
 \item{ion_technique}{a character string containing the MS ionization
 technique used (default = NegESI)}
 
-\item{element_list}{a character vector containing the elements that were used
+\item{elements_used}{a character vector containing the elements that were used
 for molecular formula assignments (default = C, H, N, O, S)}
 }
 \value{

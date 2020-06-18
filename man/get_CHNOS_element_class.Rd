@@ -10,11 +10,13 @@ get_CHNOS_element_class(data)
 \item{data}{a tibble containing the assigned molecular formulas}
 }
 \value{
-data with a new column containing the element classes
+data with a new column containing the element classes as ordered
+  factors
 }
 \description{
 This function groups assigned formulas into element classes (e.g., CHO or
 CHNOS) without regard to specific element numbers. It is intended to be used
 for grouping in plotting, and has been written for the default element list
-(CHNOS).
+(CHNOS). The element classes are ordered by decreasing relative abundances,
+so that the most abundant element class appears first.
 }

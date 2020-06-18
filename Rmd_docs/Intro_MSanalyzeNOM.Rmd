@@ -75,7 +75,6 @@ DOM_sample$sample_name
 The sheet containing the mass spectrometry data for the assigned formulas from PetroOrg&copy; is illustrated below. Much of this information is used to produce new details for data summary and visualization.  
 
 ```{r results get_sample_data, message=FALSE}
-View(DOM_sample$assigned_formulas)
 head(DOM_sample$assigned_formulas)
 ```
 
@@ -119,7 +118,7 @@ DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
 
 ```{r results get_elemental_ratios, echo=FALSE}
 DOM_sample$assigned_formulas %>%
-  dplyr::select(-hetero_class, 
+  dplyr::select(-class_hetero, 
                 -(mz:S)) %>%
   head()
 ```
@@ -155,7 +154,7 @@ If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate 
 
 ```{r most abundant formulas, message=FALSE}
 DOM_sample$assigned_formulas  %>% 
-  dplyr::select(hetero_class:rel_abund) %>%
+  dplyr::select(class_hetero:rel_abund) %>%
   dplyr::arrange(dplyr::desc(rel_abund)) %>%
   head(n = 10)
 ```
@@ -188,4 +187,4 @@ DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
 The *plot_VK_25perc_groups()* function creates a van Krevelen diagram that is colored on this basis.
 
 ```{r plot_VK_25perc_groups, fig.height=3.5, fig.width=5}
-plot_VK_groups(DOM_sample$assigned
+plot_VK_25perc_groups(DOM_sample$assigned_formulas, plot_title = DOM_s

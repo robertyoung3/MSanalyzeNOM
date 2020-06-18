@@ -8,6 +8,7 @@
 #' @importFrom rlang .data
 #'
 #' @return data with a new column containing the cumulative percent abundances
+#' @export
 get_cum_perc_abund <- function (data) {
   data %>%
     dplyr::arrange(.data$perc_abund) %>%
