@@ -4,18 +4,19 @@
 \alias{compute_arom_index}
 \title{compute_arom_index}
 \usage{
-compute_arom_index(sheet, AItype = "ModAI")
+compute_arom_index(df, elements = c("C", "H", "N", "O", "S"), AItype = "ModAI")
 }
 \arguments{
-\item{sheet}{a tibble containing MS data, including element numbers for each
+\item{df}{a tibble containing MS data, including element numbers for each
 elemental composition (e.g., C = 12, H = 26)}
+
+\item{elements}{a character vector of the elements used for formula assignment (default = CHNOS)}
 
 \item{AItype}{a character string where "AI" = aromaticity index or "ModAI" =
 modified aromaticity index}
 }
 \value{
-a vector containing the aromaticity index for every elemental
-  composition
+a vector containing the aromaticity index for every assigned formula
 }
 \description{
 This function is designed to compute the aromaticity index (AI) or modified

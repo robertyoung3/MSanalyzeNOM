@@ -4,12 +4,12 @@
 \alias{compute_DBE}
 \title{compute_DBE}
 \usage{
-compute_DBE(df, elements)
+compute_DBE(df, elements = c("C", "H", "N", "O", "S"))
 }
 \arguments{
 \item{df}{a tibble containing the assigned molecular formulas}
 
-\item{elements}{a character vector of the elements used for formula assignment}
+\item{elements}{a character vector of the elements used for formula assignment (default = CHNOS)}
 }
 \value{
 df with a column containing DBE values

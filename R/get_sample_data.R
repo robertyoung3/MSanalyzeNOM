@@ -83,11 +83,18 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
       stringr::str_replace(stringr::str_c(i, "0"), "")
   }
 
-  #### (i) reorder columns
-  temp <- temp %>%
-    dplyr::select(.data$class_hetero, .data$chem_formula, tidyselect::everything())
+  #### (i) compute neutral mass
+  ## PosESI (with adducts) and APPI (with radicals) are reserved
+  mass_proton <- 1.00727647
+  if (sample_data$ion_technique == "NegESI") {
+    temp$theor_MI_mass <- temp$theor_mz + mass_proton
+  }
 
-  #### (j) assign temp to sample_data
+  #### (j) reorder columns
+  temp <- temp %>%
+    dplyr::select(.data$class_hetero, .data$chem_formula, .data$theor_MI_mass, tidyselect::everything())
+
+  #### (k) assign temp to sample_data
   sample_data$assigned_formulas <- temp
 
   ## (3) generate table of all detected ions

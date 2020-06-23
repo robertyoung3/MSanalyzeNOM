@@ -7,13 +7,13 @@
 #' where N_i is the element number and V_i is the valence for each element i.
 #'
 #' @param df a tibble containing the assigned molecular formulas
-#' @param elements a character vector of the elements used for formula assignment
+#' @param elements a character vector of the elements used for formula assignment (default = CHNOS)
 #'
 #' @importFrom rlang .data
 #'
 #' @return df with a column containing DBE values
 #' @export
-compute_DBE <- function(df, elements) {
+compute_DBE <- function(df, elements = c("C", "H", "N", "O", "S")) {
   #create a table of elements, ordered by elements
   temp <- df %>%
     dplyr::select(elements)
@@ -36,8 +36,7 @@ compute_DBE <- function(df, elements) {
   }
 
   # step 2: use sum in complete calculation (1 + sum/2)
-  # round down in case DBE contains decimal value (e.g., 4.5)
-  temp$DBE <- floor(1 + (temp$DBE / 2))
+  temp$DBE <- 1 + (temp$DBE / 2)
 
   # add DBE to df and return
   df$DBE <- temp$DBE
