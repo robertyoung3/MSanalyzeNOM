@@ -13,7 +13,7 @@
 #' @export
 get_25perc_groups <- function(data) {
   data %>%
-    get_perc_abund() %>%
+    compute_perc_abund() %>%
     get_cum_perc_abund() %>%
     dplyr::arrange(.data$cum_perc_abund) %>%
     dplyr::mutate(group_25perc = cut(.data$cum_perc_abund,

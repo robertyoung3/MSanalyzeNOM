@@ -40,12 +40,6 @@ compute_DBE <- function(df, elements) {
   temp$DBE <- floor(1 + (temp$DBE / 2))
 
   # add DBE to df and return
-  # keeping original to compare against PetroOrg for a few samples
-  if ("DBE" %in% colnames(df)) {
-    df$RDBE <- temp$DBE
-  } else {
-    df$DBE <- temp$DBE
-  }
-
+  df$DBE <- temp$DBE
   return(df)
 }

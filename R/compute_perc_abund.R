@@ -1,4 +1,4 @@
-#' get_perc_abund
+#' compute_perc_abund
 #'
 #' This function computes percent abundances from the relative abundances of
 #' assigned formulas.
@@ -9,7 +9,7 @@
 #'
 #' @return data with a new column containing the computed percent abundances
 #' @export
-get_perc_abund <- function (data) {
+compute_perc_abund <- function (data) {
 data %>%
     dplyr::mutate(perc_abund = (.data$rel_abund / sum(.data$rel_abund)) * 100)
 }

@@ -11,14 +11,9 @@ plot_mass_spectrum(data, plot_title, min_x = NULL, max_x = NULL)
 
 \item{plot_title}{a character string containing the sample name}
 
-\item{min_x}{a numeric containing the minimum mz value to plot (default =
-NULL)}
+\item{min_x}{a numeric containing the minimum mz value to plot (default = NULL)}
 
-\item{max_x}{a numeric containing the maximum mz value to plot (default =
-NULL)}
-}
-\value{
-
+\item{max_x}{a numeric containing the maximum mz value to plot (default = NULL)}
 }
 \description{
 This function plots the sample mass spectrum.The minimum and maximum mz

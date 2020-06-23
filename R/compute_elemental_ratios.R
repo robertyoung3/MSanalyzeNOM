@@ -1,4 +1,4 @@
-#' get_elemental_ratios
+#' compute_elemental_ratios
 #'
 #' This function computes elemental ratios from user-specified elements.
 #'
@@ -8,7 +8,7 @@
 #'
 #' @return data with a new column containing the computed elemental ratio
 #' @export
-get_elemental_ratios <- function(data, num = "H", denom = "C") {
+compute_elemental_ratios <- function(data, num = "H", denom = "C") {
   label <- stringr::str_c(num, "to", denom)
   data[[label]] <- data[[num]] / data[[denom]]
   return(data)
