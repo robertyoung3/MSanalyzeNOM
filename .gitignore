@@ -2,5 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-Intro_MSanalyzeNOM.nb.html
-Intro_MSanalyzeNOM_v2.nb.html
+/Rmd_docs/*.html
+/Rmd_docs/*.log
