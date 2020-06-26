@@ -388,8 +388,3 @@ DOM_sample$assigned_formulas %>%
   head()
 ```
 
-
-#### Estimated Carboxyl Content
-
-[]
-
