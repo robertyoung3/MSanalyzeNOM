@@ -1,16 +1,17 @@
 To-do list:
 
 1. complete van Krevelen panel by class_element
-2. create Kroll diagram
-3. create function to eliminate LAS and other known laboratory contaminants once KMD series have been computed
-4. create a plot for H/C vs C number, O/C vs C number, DBE (or DBE minus O) vs C number
-5. create factor variable for mass ranges? (use pretty() or modulus 100 to set range)
-6. create bar plot for factor variables as a function of rel. abund. &  formula number
-7. create bar plot for heteroatom classes (Ox, NOx, N2Ox, etc.)
-8. compute estimated carboxyls?
-9. create DBE vs. O and DBE minus O frequency plots like Herzsprung?
-10. create filter or test for improbable formula assignments?
-11. test for inclusion in the element_list when computing elemental ratios: is there a need? see DBE & similar functions
+2. revise VK plot for 25% groups to fix color to groups
+3. create Kroll diagram
+4. create function to eliminate LAS and other known laboratory contaminants once KMD series have been computed
+5. create a plot for H/C vs C number, O/C vs C number, DBE (or DBE minus O) vs C number
+6. create factor variable for mass ranges? (use pretty() or modulus 100 to set range)
+7. create bar plot for factor variables as a function of rel. abund. &  formula number
+8. create bar plot for heteroatom classes (Ox, NOx, N2Ox, etc.)
+9. compute estimated carboxyls?
+10. create DBE vs. O and DBE minus O frequency plots like Herzsprung?
+11. create filter or test for improbable formula assignments?
+12. test for inclusion in the element_list when computing elemental ratios: is there a need? see DBE & similar functions
 
 
 Other:

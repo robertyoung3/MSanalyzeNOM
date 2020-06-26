@@ -318,21 +318,10 @@ DOM_sample$assigned_formulas  %>%
 
 Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In this case, the high abundance laboratory contaminants are usually grouped with the most abundant natural compounds, and their effect on the appearance of the most abundant natural compounds is limited.
 
-```{r plot_VK_25perc_groups CHNO, warning=FALSE, messages=FALSE, fig.height=3.5, fig.width=5}
-VK <- DOM_sample$new_assigned_formulas %>% 
-  plot_VK_gradient(var = "rel_abund", plot_title = DOM_sample$sample_name)
-VK + ggplot2::facet_wrap(~ DOM_sample$new_assigned_formulas$class_element, )
+```{r panel of element classes, warning=FALSE, messages=FALSE, fig.height=3.5, fig.width=5}
+#  plot_VK_gradient_panel(DOM_sample$new_assigned_formulas, var = "rel_abund", plot_title = DOM_sample$sample_name)
 ```
 
-
-This plot can be supplemented with data on the number of formulas in each category.
-
-```{r data get_25perc_groups CHNO, message=FALSE}
-DOM_sample$assigned_formulas  %>% 
-  dplyr::group_by(group_25perc) %>% 
-  dplyr::rename(group = group_25perc) %>%
-  dplyr::summarize(`formulas` = dplyr::n())
-```
 
 
 
@@ -366,8 +355,9 @@ DOM_sample$assigned_formulas <- compute_AvgOSC(DOM_sample$assigned_formulas,
 
 ```{r results compute_AvgOSC}
 DOM_sample$assigned_formulas %>%
+  dplyr::arrange(class_element, O, mz) %>%
   dplyr::select(chem_formula, AvgOSC) %>%
-  head()
+  head(n = 8)
 ```
 
 
@@ -384,6 +374,7 @@ DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
 
 ```{r results compute_KMD_CH2}
 DOM_sample$assigned_formulas %>%
+  dplyr::arrange(class_element, O, KMD_CH2_theor, mz) %>%
   dplyr::select(chem_formula, mz, theor_mz, KMD_CH2_meas, KMD_CH2_theor) %>%
   head()
 ```
