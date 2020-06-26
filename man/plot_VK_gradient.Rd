@@ -4,15 +4,15 @@
 \alias{plot_VK_gradient}
 \title{plot_VK_gradient}
 \usage{
-plot_VK_gradient(data, var, plot_title = "")
+plot_VK_gradient(data, var = "rel_abund", plot_title = "")
 }
 \arguments{
 \item{data}{a tibble containing the assigned molecular formulas}
 
 \item{var}{a character string containing the continuous variable column name
-used to establish the color gradient}
+used to establish the color gradient (default = "rel_abund")}
 
-\item{plot_title}{a character string containing the sample name}
+\item{plot_title}{a character string containing the sample name (default = none)}
 }
 \description{
 This function makes a traditional van Krevelen diagram (H/c vs. O/C). This

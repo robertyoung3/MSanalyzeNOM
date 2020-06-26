@@ -31,7 +31,7 @@ compute_arom_index <- function (df, elements = c("C", "H", "N", "O", "S"), AItyp
 
   # identify elements that are not in formula elements
   # print error message
-  # long-term: sum valence 1 elements to include halogens, etc.
+  # long-term: sum valence 1 elements to include halogens (X)
   for (i in 1:length(elements)) {
     if (!elements[[i]] %in% formula_elements) {
       message("The aromaticity index calculation is currently limited to CHNOPS elements.")
