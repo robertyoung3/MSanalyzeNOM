@@ -371,20 +371,25 @@ DOM_sample$assigned_formulas %>%
 ```
 
 
-#### Kendrick Mass Defect
+#### Kendrick Mass Defect and zscore
 
 []
 
+```{r compute_KMD_CH2}
+DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
+  compute_z_CH2() %>%
+  compute_KMD_CH2(selection = "meas") %>%
+  compute_KMD_CH2(selection = "theor")
+```
 
-#### z score
-
-[use z_CF2 with KMD_CF2 for PFCs]
+```{r results compute_KMD_CH2}
+DOM_sample$assigned_formulas %>%
+  dplyr::select(chem_formula, mz, theor_mz, KMD_CH2_meas, KMD_CH2_theor) %>%
+  head()
+```
 
 
 #### Estimated Carboxyl Content
 
 []
-
-
-## Visualizing the Data
 
