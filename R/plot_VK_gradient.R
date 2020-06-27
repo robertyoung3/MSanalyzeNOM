@@ -3,7 +3,8 @@
 #' This function makes a traditional van Krevelen diagram (H/c vs. O/C). This
 #' plot shows the distribution of the assigned formulas as a function of
 #' elemental ratios, and shows the intensities of the detected ions on a
-#' gradient color scale (typically as a function of relative or percent abundance).
+#' gradient color scale (typically as a function of relative or percent
+#' abundance).
 #'
 #' The area above the horizontal line at H/C = 1.5 is designated as the
 #' aliphatic region in accordance with D'Andrilli et al. 2015 and Lv et al.
@@ -14,13 +15,21 @@
 #' @param data a tibble containing the assigned molecular formulas
 #' @param var a character string containing the continuous variable column name
 #'   used to establish the color gradient (default = "rel_abund")
-#' @param plot_title a character string containing the sample name (default = none)
+#' @param plot_title a character string containing the sample name (default =
+#'   none)
+#' @param panel a logical value specifying whether a panel will be used (default
+#'   = FALSE)
+#' @param var_panel a character string containing the column name specifying the
+#'   factor variable to be used for faceting
+#' @param num_col an integer specifying the number of panel columns (default =
+#'   2)
 #'
 #' @importFrom rlang .data
 #' @importFrom ggplot2 aes element_text element_blank
 #'
 #' @export
-plot_VK_gradient <- function(data, var = "rel_abund", plot_title = "") {
+plot_VK_gradient <- function(data, var = "rel_abund", plot_title = "", panel = FALSE,
+                             var_panel, num_col = 2) {
   # plotting highest values on top
   data <- data %>%
     dplyr::arrange(.data[[var]])
@@ -35,7 +44,7 @@ plot_VK_gradient <- function(data, var = "rel_abund", plot_title = "") {
 
   # RColorBrewer::brewer.pal(n = 9, name = "GnBu")
   # "#F7FCF0" "#E0F3DB" "#CCEBC5" "#A8DDB5" "#7BCCC4" "#4EB3D3" "#2B8CBE" "#0868AC" "#084081"
-    ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
+  VK <- ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
     ggplot2::geom_point(aes(color = .data[[var]]), size = 1, na.rm = TRUE, alpha = 0.8) +
     ggplot2::scale_color_gradient(name = label,
                                   low = "#F7FCF0", high = "#084081") +
@@ -50,6 +59,16 @@ plot_VK_gradient <- function(data, var = "rel_abund", plot_title = "") {
     ggplot2::scale_y_continuous(limits = c(0, 2.5), breaks = seq(0.0, 2.5, by = 0.5)) +
     ggplot2::geom_hline(yintercept = 1.5) +
     ggplot2::geom_abline(intercept = 1.1, slope = -0.44) +
-    ggplot2:: annotate("text", x = 1.3, y = c(1.6, 0.37), label = c("ALIPH", "AROM"),
+    # the following two annotations have to be separated to work with faceting
+    ggplot2:: annotate("text", x = 1.3, y = 1.6, label = "ALIPH",
+                       fontface = 2, size = 4) +
+    ggplot2:: annotate("text", x = 1.3, y = 0.44, label = "AROM",
                        fontface = 2, size = 4)
+
+  # implement panel
+  if (panel == TRUE) {
+    VK + ggplot2::facet_wrap(~ .data[[var_panel]], ncol = num_col)
+  } else {
+    VK
+  }
 }

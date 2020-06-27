@@ -4,12 +4,27 @@
 \alias{plot_VK_25perc_groups}
 \title{plot_VK_25perc_groups}
 \usage{
-plot_VK_25perc_groups(data, plot_title = "")
+plot_VK_25perc_groups(
+  data,
+  plot_title = "",
+  panel = FALSE,
+  var_panel,
+  num_col = 2
+)
 }
 \arguments{
 \item{data}{a tibble containing the assigned molecular formulas}
 
 \item{plot_title}{a character string containing the sample name}
+
+\item{panel}{a logical value specifying whether a panel will be used (default
+= FALSE)}
+
+\item{var_panel}{a character string containing the column name specifying the
+factor variable to be used for faceting}
+
+\item{num_col}{an integer specifying the number of panel columns (default =
+2)}
 }
 \description{
 This function makes a traditional van Krevelen diagram (H/c vs. O/C). This

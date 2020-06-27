@@ -4,7 +4,14 @@
 \alias{plot_VK_gradient}
 \title{plot_VK_gradient}
 \usage{
-plot_VK_gradient(data, var = "rel_abund", plot_title = "")
+plot_VK_gradient(
+  data,
+  var = "rel_abund",
+  plot_title = "",
+  panel = FALSE,
+  var_panel,
+  num_col = 2
+)
 }
 \arguments{
 \item{data}{a tibble containing the assigned molecular formulas}
@@ -12,13 +19,24 @@ plot_VK_gradient(data, var = "rel_abund", plot_title = "")
 \item{var}{a character string containing the continuous variable column name
 used to establish the color gradient (default = "rel_abund")}
 
-\item{plot_title}{a character string containing the sample name (default = none)}
+\item{plot_title}{a character string containing the sample name (default =
+none)}
+
+\item{panel}{a logical value specifying whether a panel will be used (default
+= FALSE)}
+
+\item{var_panel}{a character string containing the column name specifying the
+factor variable to be used for faceting}
+
+\item{num_col}{an integer specifying the number of panel columns (default =
+2)}
 }
 \description{
 This function makes a traditional van Krevelen diagram (H/c vs. O/C). This
 plot shows the distribution of the assigned formulas as a function of
 elemental ratios, and shows the intensities of the detected ions on a
-gradient color scale (typically as a function of relative or percent abundance).
+gradient color scale (typically as a function of relative or percent
+abundance).
 }
 \details{
 The area above the horizontal line at H/C = 1.5 is designated as the

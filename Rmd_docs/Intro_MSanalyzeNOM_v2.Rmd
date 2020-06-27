@@ -78,19 +78,11 @@ head(DOM_sample$assigned_formulas)
 
 The table of elements was created from the list of elements that was used for formula assignment in PetroOrg&copy;. The default list of elements includes C, H, N, O and S, but a different element list can be specified. 
 
-```{r change elements_used, message=FALSE}
-new_DOM_sample <- get_sample_data(sample_xcel, elements_used = c("C", "H", "N", "O"))
-new_DOM_sample[["elements_used"]]
-```
-
 
 #### Additional Details
 
 Additional details for the *get_sample_data()* function can be examined by typing *"?get_sample_data"* in the R console.
 
-```{r additional details, include=FALSE}
-rm(new_DOM_sample)
-```
 
 
 
@@ -272,7 +264,7 @@ plot_VK_gradient(DOM_sample$assigned_formulas, var = "rel_abund",
                  plot_title = DOM_sample$sample_name)
 ```
 
-If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them as long as the figure is appropriately annotated. After removing the LAS surfactants and stearic and palmitic acids referenced above, the van Krevelen diagram offers better resolution. 
+If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them, provided that the figure is appropriately annotated. After removing the LAS surfactants and stearic and palmitic acids referenced above, the van Krevelen diagram offers better resolution. 
 
 ```{r replot VK_gradient, fig.height=3.5, fig.width=5}
 # assigned_formulas and new_assigned_formulas should be segregated if saving
@@ -303,25 +295,33 @@ plot_VK_25perc_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$samp
 ```
 
 
-This plot can be supplemented with data on the number of formulas in each category.
+This plot can be supplemented with data on the number of formulas in each category. In the example below, 1.5% of the formulas make up the first 25% of abundance, and 80.7% of the formulas make up the bottom 25%.
 
-```{r data get_25perc_groups, message=FALSE}
-DOM_sample$assigned_formulas  %>% 
+```{r formula number get_25perc_groups, message=FALSE}
+temp <- DOM_sample$assigned_formulas  %>% 
   dplyr::group_by(group_25perc) %>% 
   dplyr::rename(group = group_25perc) %>%
   dplyr::summarize(`formulas` = dplyr::n())
+temp
 ```
 
+```{r data get_25perc_groups, message=FALSE}
+temp[which(temp$group == "Top 25%"), ]$formulas / sum(temp$formulas) * 100
+```
+
+```{r data2 get_25perc_groups, message=FALSE}
+temp[which(temp$group == "Bottom 25%"), ]$formulas / sum(temp$formulas) * 100
+```
 
 
 4. *Plotting Individual Elemental Classes*
 
 Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In this case, the high abundance laboratory contaminants are usually grouped with the most abundant natural compounds, and their effect on the appearance of the most abundant natural compounds is limited.
 
-```{r panel of element classes, warning=FALSE, messages=FALSE, fig.height=3.5, fig.width=5}
-#  plot_VK_gradient_panel(DOM_sample$new_assigned_formulas, var = "rel_abund", plot_title = DOM_sample$sample_name)
+```{r panel of element classes, warning=FALSE, messages=FALSE, fig.height=5, fig.width=8}
+plot_VK_gradient_panel(DOM_sample$new_assigned_formulas, var = "rel_abund", plot_title = DOM_sample$sample_name, 
+                       panel = TRUE, var_panel = "class_element")
 ```
-
 
 
 

@@ -14,13 +14,20 @@
 #'
 #' @param data a tibble containing the assigned molecular formulas
 #' @param plot_title a character string containing the sample name
+#' @param panel a logical value specifying whether a panel will be used (default
+#'   = FALSE)
+#' @param var_panel a character string containing the column name specifying the
+#'   factor variable to be used for faceting
+#' @param num_col an integer specifying the number of panel columns (default =
+#'   2)
 #'
 #' @importFrom rlang .data
 #' @importFrom ggplot2 aes element_text element_blank
 #'
 #' @export
-plot_VK_flat <- function(data, plot_title = "") {
-  ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
+plot_VK_flat <- function(data, plot_title = "", panel = FALSE,
+                         var_panel, num_col = 2) {
+  VK <- ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
     ggplot2::geom_point(size = 1, na.rm = TRUE, alpha = 0.1) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
@@ -33,6 +40,16 @@ plot_VK_flat <- function(data, plot_title = "") {
     ggplot2::scale_y_continuous(limits = c(0, 2.5), breaks = seq(0.0, 2.5, by = 0.5)) +
     ggplot2::geom_hline(yintercept = 1.5) +
     ggplot2::geom_abline(intercept = 1.1, slope = -0.44) +
-    ggplot2:: annotate("text", x = 1.3, y = c(1.6, 0.37), label = c("ALIPH", "AROM"),
+    # the following two annotations have to be separated to work with faceting
+    ggplot2:: annotate("text", x = 1.3, y = 1.6, label = "ALIPH",
+                       fontface = 2, size = 4) +
+    ggplot2:: annotate("text", x = 1.3, y = 0.44, label = "AROM",
                        fontface = 2, size = 4)
+
+  # implement panel
+  if (panel == TRUE) {
+    VK + ggplot2::facet_wrap(~ .data[[var_panel]], ncol = num_col)
+  } else {
+    VK
+  }
 }
