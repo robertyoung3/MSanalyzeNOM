@@ -48,7 +48,7 @@ plot_VK_groups <- function(data, var = "group_25perc", plot_title = "", panel = 
     # the following two annotations have to be separated to work with faceting
     ggplot2:: annotate("text", x = 1.3, y = 1.6, label = "ALIPH",
                        fontface = 2, size = 4) +
-    ggplot2:: annotate("text", x = 1.3, y = 0.44, label = "AROM",
+    ggplot2:: annotate("text", x = 1.3, y = 0.42, label = "AROM",
                        fontface = 2, size = 4)
 
   # implement panel

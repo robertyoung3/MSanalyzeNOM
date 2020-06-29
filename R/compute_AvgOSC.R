@@ -40,7 +40,7 @@ compute_AvgOSC <- function (df, elements = c("C", "H", "N", "O", "S")) {
     }
   }
   # AvgOSC = -sum(atom number (atom oxidation state)) / C number
-  # AvgOSC = -((H * 1) + (N * -3) + (O * -2) + (S * -2) + (X * -1)) / C
+  # AvgOSC = -(1*H + -3*N + -2*O + -2*S + -1*X) / C
     df %>%
       dplyr::mutate(AvgOSC = -(.data$H + (-3*.data$N) + (-2*.data$O) + (-2*.data$S))/.data$C)
 }
