@@ -90,11 +90,15 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
     temp$theor_MI_mass <- temp$theor_mz + mass_proton
   }
 
-  #### (j) reorder columns
+  #### (j) compute percent abundances
+  temp <- temp %>%
+    compute_perc_abund()
+
+  #### (k) reorder columns
   temp <- temp %>%
     dplyr::select(.data$class_hetero, .data$chem_formula, .data$theor_MI_mass, tidyselect::everything())
 
-  #### (k) assign temp to sample_data
+  #### (l) assign temp to sample_data
   sample_data$assigned_formulas <- temp
 
   ## (3) generate table of all detected ions

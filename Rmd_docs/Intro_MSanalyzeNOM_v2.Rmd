@@ -67,16 +67,11 @@ DOM_sample$sample_name
 
 #### Types of MS Data for the Assigned Formulas
 
-The sheet containing the mass spectrometry data for the assigned formulas from PetroOrg&copy; is illustrated below, and includes the chemical formula, its theoretical monoisotopic mass, the detected m/z, the mass error, and the ion abundance. Much of this information, including the column names, is used by functions in the MSanalyzeNOM package to produce additional data and visualizations.
+The sheet containing the mass spectrometry data for the assigned formulas from PetroOrg&copy; is illustrated below, and includes the chemical formula, its theoretical monoisotopic mass, the detected m/z, the mass error, the ion's relative abundance, and the ion's percent relative abundance. Much of this information, including the column names, is used by functions in the MSanalyzeNOM package to produce additional data and visualizations.
 
 ```{r results get_sample_data, message=FALSE}
 head(DOM_sample$assigned_formulas)
 ```
-
-
-#### Changing the Element List
-
-The table of elements was created from the list of elements that was used for formula assignment in PetroOrg&copy;. The default list of elements includes C, H, N, O and S, but a different element list can be specified. 
 
 
 #### Additional Details
@@ -122,7 +117,7 @@ plot_mass_spectrum(DOM_sample$all_detected_ions,
                    min_x = 250.9, max_x = 251.2)
 ```
 
-NOM usually looks like a skewed Gaussian peak. As a result, any high abundance ions are at least suspected laboratory contaminants. In the preceding figure, the two most abundant compounds appear to be linear alkylbenzene sulfonate (LAS) surfactants, and the next two most abundant appear to be stearic and palmitic acids. These are common laboratory contaminants associated with washing laboratory glassware and LC-MS grade methanol.
+NOM usually looks like a skewed Gaussian peak. As a result, any high abundance ions are at least suspected laboratory contaminants. In the preceding figure, the two most abundant compounds appear to be linear alkylbenzene sulfonate (LAS) surfactants, and the next two most abundant appear to be stearic and palmitic acids. The former are common laboratory contaminants associated with washing laboratory glassware, and the latter are common laboratory contaminants associated with LC-MS grade methanol.
 
 ```{r most abundant formulas, message=FALSE}
 DOM_sample$assigned_formulas  %>% 
@@ -131,7 +126,7 @@ DOM_sample$assigned_formulas  %>%
   head(n = 8)
 ```
 
-[remove contaminants and replot]
+Importantly, the numbers of detected ions and assigned formulas are sensitive to suppression from high abundance ions because the vast majority of detected ions occur at relatively low abundances. This can make comparisons between NOM samples challenging.
 
 
 #### Double Bond Equivalents (DBE)
@@ -140,8 +135,8 @@ The number of double bond equivalents (DBE) is the estimated number of rings and
 
 >$$DBE = 1 + \frac{\sum_{i=1}^{n}N_i\left(V_i - 2\right)}{2}$$
 >**where:**  
->$N_i$ = number of atom $i$  
->$V_i$ = valence of atom $i$  
+>$N_i$ = number of element $i$  
+>$V_i$ = valence of element $i$  
 
 A simpler calculation for several comment elements is:
 
@@ -152,7 +147,7 @@ A simpler calculation for several comment elements is:
 >$c$ = number of atoms with a valency of 3 (N, P)  
 >$d$ = number of atoms with a valency of 4 (C, Si) 
 
-The basic DBE calculation has been criticized because it fails to take [multiple valence states](https://fiehnlab.ucdavis.edu/projects/seven-golden-rules/ring-double-bonds) into account, and because heteroatoms in DOM can also form rings and double bonds (Gonsior et al. 2009). 
+The basic DBE calculation has been criticized because it fails to take [multiple valence states](https://fiehnlab.ucdavis.edu/projects/seven-golden-rules/ring-double-bonds) into account, and because rings and double bonds can also be formed with heteroatoms in DOM (Gonsior et al. 2009). 
 
 The MSanalyzeNOM package imports DBE values from PetroOrg&copy;, but they can also be computed using the *compute_DBE()* function. The following code shows that they produce the same values.
 
@@ -164,6 +159,7 @@ identical(DOM_sample$assigned_formulas$DBE, reanalyzed_DOM_sample$DBE)
 ```{r clear reanalyzed_DOM_sample}
 rm(reanalyzed_DOM_sample)
 ```
+
 
 #### DBE/C Ratios
 
@@ -178,8 +174,6 @@ DOM_sample$assigned_formulas %>%
   dplyr::select(chem_formula, DBE, C, DBEtoC) %>%
   head()
 ```
-
-In [ChemSpider](http://www.chemspider.com/Search.aspx?q=C11H16O1), many of the proposed structures for $C_{11}H_{16}O$ are aromatic, so the ratio is not a perfect predictor in every case. In fact, FTICR MS does not distinguish between isomers unless chromatography or fragmentation are employed, so the chemical formula $C_{11}H_{16}O$ could even represent a mixture of **all** the proposed structures in ChemSpider. NMR spectroscopy can quantify the aromaticity of the sample as a whole, and  can be used to support the DBE/C estimate.
 
  
 #### Aromaticity/Modified Aromaticity Index
@@ -208,6 +202,16 @@ DOM_sample$assigned_formulas %>%
   head()
 ```
 
+In [ChemSpider](http://www.chemspider.com/Search.aspx?q=C11H16O1), many of the proposed structures for $C_{11}H_{16}O$ are aromatic, so none of the aromaticity estimates are perfect predictors in every case. In fact, FTICR MS does not distinguish between isomers unless chromatography or fragmentation are employed, so the chemical formula $C_{11}H_{16}O$ could, in theory, represent a mixture of **all** the proposed structures in ChemSpider. 
+
+A sample's aromaticity can be estimated by summing the percent relative abundances of sample components with aromaticity estimates $\ge$ 0.5. This estimate could be compared to percent aromaticity values from NMR spectroscopy, which quantifies functional group content in the entire NOM sample. 
+
+```{r}
+DOM_sample$assigned_formulas %>%
+  dplyr::filter(ModAI <= 0.5) %>%
+  dplyr::summarize(n = dplyr::n(), 
+                   `% abund` = sum(perc_abund))
+```
 
 
 #### Useful Elemental Ratios
@@ -229,7 +233,6 @@ DOM_sample$assigned_formulas %>%
 ```
 
 
-
 #### van Krevelen Diagrams (H/C vs. O/C)
 
 A traditional van Krevelen diagram plots O/C vs. H/C ratios to reflect O and H densities in the sample. In general, high H/C ratios reflect a high degree of saturation, and low H/C ratios reflect the presence of rings and double bonds. Similarly, high O/C ratios reflect the relative presence of hydroxyl, carboxyl and other oxygen functional groups. To support interpretation, the area above the horizontal line at H/C = 1.5 has been designated as the aliphatic region in accordance with D'Andrilli et al. 2015 and Lv et al. 2017, and the area below the diagonal line from H/C = 1.1 has been  designated as the aromatic region, using the modified aromaticity index $\ge$ 0.5.
@@ -243,7 +246,13 @@ The following plot, created by the *plot_VK_flat()* function, shows the distribu
 plot_VK_flat(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name)
 ```
 
-Just as DBE/C and the aromaticity indexes don't perfectly predict aromaticity, the lines on the van Krevelen diagram are approximations of aliphatic and aromatic content. When all of the points with a modified aromaticity index equal to exactly 0.5 are plotted, they do not form a straight line.
+The *plot_VK_flat()* function can separate the assigned formulas by elemental class, or another factor variable, using the *panel* and *var_panel* arguments.
+
+```{r plot_VK_flat class_element, fig.height=6, fig.width=7}
+plot_VK_flat(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name, panel = TRUE, var_panel = "class_element")
+```
+
+Just as DBE/C and the aromaticity indexes don't perfectly predict aromaticity, the lines on the van Krevelen diagram are approximations of aliphatic and aromatic content. When all of the points with a modified aromaticity index equal to 0.5 are plotted, they do not form a straight line.
 
 ```{r plot_VK_flat ModAI, fig.height=3.5, fig.width=4}
 DOM_sample$assigned_formulas %>%
@@ -252,25 +261,23 @@ DOM_sample$assigned_formulas %>%
 ```
 
 
-
 2. *Color Gradient Based on Relative Abundances*
 
-The numbers of detected ions and assigned formulas can be influenced by ion suppression, making it difficult to compare van Krevelen diagrams from different samples or analyses. In fact, the number of assigned formulas is sensitive to ion suppression because the vast majority of detected ions occur at relatively low abundances. 
-
-The *plot_VK_gradient()* function creates a van Krevelen diagram colored with a gradient based on their relative abundances. However, when a few assigned formulas are detected at comparatively high abundances, coloring the van Krevelen diagram in this way doesn't necessarily improve resolution. 
+The *plot_VK_gradient()* function creates a van Krevelen diagram colored with a gradient based on their relative abundances. However, when a few assigned formulas are detected at comparatively high abundances, coloring the van Krevelen diagram in this way may not adequately resolve the NOM compounds with substantially lower abundances. 
 
 ```{r plot_VK_gradient, fig.height=3.5, fig.width=5}
 plot_VK_gradient(DOM_sample$assigned_formulas, var = "rel_abund", 
                  plot_title = DOM_sample$sample_name)
 ```
 
-If the highly abundant formulas are known  (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them, provided that the figure is appropriately annotated. After removing the LAS surfactants and stearic and palmitic acids referenced above, the van Krevelen diagram offers better resolution. 
+If the highly abundant formulas are known (e.g., linear alkylbenzene sulfonate surfactants), the van Krevelen diagram can be re-plotted without them, as long as the figure is appropriately annotated. After removing the LAS surfactants and stearic and palmitic acids referenced above, the van Krevelen diagram offers better resolution. 
 
 ```{r replot VK_gradient, fig.height=3.5, fig.width=5}
 # assigned_formulas and new_assigned_formulas should be segregated if saving
 # DOM_sample
 DOM_sample$new_assigned_formulas <- DOM_sample$assigned_formulas  %>% 
-  dplyr::filter(!chem_formula %in% c("C17H28O3S1", "C18H30O3S1", "C18H36O2", "C16H32O2")) %>%
+  dplyr::filter(!chem_formula %in% 
+                c("C17H28O3S1", "C18H30O3S1", "C18H36O2", "C16H32O2")) %>%
   # normalize rel_abund to new highest value
   dplyr::mutate(rel_abund = rel_abund / max(rel_abund) * 100)
 plot_VK_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund", 
@@ -278,10 +285,9 @@ plot_VK_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund",
 ```
 
 
-
 3. *Grouped by %Contribution to Abundance*
 
-Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In this case, the high abundance laboratory contaminants are usually grouped with the most abundant natural compounds, and their effect on the appearance of the most abundant natural compounds is limited.
+Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In this way, the high abundance laboratory contaminants can be grouped with the most abundant natural compounds, and their influence on the appearance of NOM components with substantially lower abundances can be limited.
 
 ```{r get_25perc_groups}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
@@ -295,7 +301,7 @@ plot_VK_25perc_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$samp
 ```
 
 
-This plot can be supplemented with data on the number of formulas in each category. In the example below, 1.5% of the formulas make up the first 25% of abundance, and 80.7% of the formulas make up the bottom 25%.
+This plot can be supplemented with data on the number of formulas in each category. In the sample plotted above, 1.5% of the formulas make up the first 25% of abundance, and 80.7% of the formulas make up the bottom 25%.
 
 ```{r formula number get_25perc_groups, message=FALSE}
 temp <- DOM_sample$assigned_formulas  %>% 
@@ -305,50 +311,79 @@ temp <- DOM_sample$assigned_formulas  %>%
 temp
 ```
 
-```{r data get_25perc_groups, message=FALSE}
+```{r data get_25perc_groups, message=FALSE, include=FALSE, results=FALSE}
 temp[which(temp$group == "Top 25%"), ]$formulas / sum(temp$formulas) * 100
 ```
 
-```{r data2 get_25perc_groups, message=FALSE}
+```{r data2 get_25perc_groups, message=FALSE, include=FALSE, results=FALSE}
 temp[which(temp$group == "Bottom 25%"), ]$formulas / sum(temp$formulas) * 100
 ```
 
+Like the flat VK diagram, the *plot_VK_25perc_groups()* function can separate the assigned formulas by elemental class using the *panel* and *var_panel* arguments.
 
-4. *Plotting Individual Elemental Classes*
-
-Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, all of the formulas that account for the top 25% of total abundance can be grouped together, and so on, until four distinct groups have been formed: "top 25%", "second 25%", "third 25%", and "bottom 25%". In this case, the high abundance laboratory contaminants are usually grouped with the most abundant natural compounds, and their effect on the appearance of the most abundant natural compounds is limited.
-
-```{r panel of element classes, warning=FALSE, messages=FALSE, fig.height=5, fig.width=8}
-plot_VK_gradient_panel(DOM_sample$new_assigned_formulas, var = "rel_abund", plot_title = DOM_sample$sample_name, 
-                       panel = TRUE, var_panel = "class_element")
+```{r plot_VK_25perc_groups 25perc groups, messages=FALSE, warning=FALSE, fig.height=6, fig.width=7}
+plot_VK_25perc_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$sample_name, panel = TRUE, var_panel = "class_element")
 ```
 
 
-
-#### AvgOSC (NOSC) and Kroll Diagrams
-
-The average oxidation state of carbon (AvgOSC), or nominal oxidation state of carbon (NOSC), can be used to demonstrate the extent of oxidation in an NOM sample (Kroll et al. 2011), or to illustrate its thermodynamic favorability for oxidative degradation (Boye et al. 2017). The *compute_AvgOSC()* function computes the average oxidation state of carbon based on the following formula (Kroll et al. 2011, Riedel et al. 2012., and Lavonen et al. 2013):
+#### Kendrick Mass Defect and z score
 
 []
 
->$$DBE = 1 + \frac{\sum_{i=1}^{n}N_i\left(V_i - 2\right)}{2}$$
+```{r compute_KMD_CH2}
+DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
+  compute_z_CH2() %>%
+  compute_KMD_CH2(selection = "meas", num_digits = 5) %>%
+  compute_KMD_CH2(selection = "theor")
+```
+
+```{r results compute_KMD_CH2}
+DOM_sample$assigned_formulas %>%
+  dplyr::arrange(class_element, O, KMD_CH2_theor, mz) %>%
+  dplyr::select(chem_formula, mz, theor_mz, z_CH2, KMD_CH2_meas, KMD_CH2_theor) %>%
+  head()
+```
+
+The linear alkylbenzyl sulfonate (LAS) surfactants have a CH2 repeating unit, and a theoretical Kendrick mass defect equal to 0.1788, but the N4 O3 heteroatom class also contains a homologous series with a theoretical Kendrick mass defect equal to 0.1788. Z scores help to separate homologous series with similar measured and theoretical Kendrick mass defects.
+
+```{r KMD LAS}
+DOM_sample$assigned_formulas %>%
+  dplyr::filter(KMD_CH2_theor == 0.1788) %>%
+  dplyr::select(class_hetero, chem_formula, mz, rel_abund, 
+                z_CH2, KMD_CH2_meas, KMD_CH2_theor) %>%
+  dplyr::arrange(z_CH2, dplyr::desc(rel_abund))
+```
+
+The *remove_common_contaminants()* function removes LAS surfactants and stearic and palmitic acids from the assigned formulas to improve the visualization of less abundant NOM components. The function should only be used with appropriate annotations and discussion, and the edited formulas should be segregated from the unedited data in DOM_sample. Importantly, removing the contaminants also does not remove their influence on the other detected ions and assigned formulas, which can be reduced in number due to the presence of high abundance contaminants.
+
+```{r remove_common_contaminants}
+
+```
+
+
+#### Average Oxidation State of Carbon
+
+The average oxidation state of carbon (AvgOSC), or nominal oxidation state of carbon (NOSC), can be used to demonstrate the extent of oxidation in an NOM sample (Kroll et al. 2011), or to illustrate its thermodynamic favorability for oxidative degradation (Boye et al. 2017). The *compute_AvgOSC()* function computes the average oxidation state of carbon based on the following formula (Kroll et al. 2011, Riedel et al. 2012., and Lavonen et al. 2013):
+
+>$$AvgOSC = -\sum_{i=1}^{n}OS_i\frac{n_i}{n_C}$$
 >**where:**  
->$N_i$ = number of atom $i$  
->$V_i$ = valence of atom $i$  
+>$OS_i$ = oxidation state of element $i$  
+>$n_i$ = number of element $i$  
+>$n_C$ = number of carbon atoms  
 
 A simpler calculation for several comment elements is:
 
->$$DBE = 1 - \frac{a}{2} + \frac{c}{2} + d$$  
+>$$4 - \frac{4c + h − 3n - 2o - 2s}{c}
 >**where:**  
->$a$ = number of atoms with a valence of 1 (H, F, Cl, Br)  
->$b$ = number of atoms with a valency of 2 (O, S)  
->$c$ = number of atoms with a valency of 3 (N, P)  
->$d$ = number of atoms with a valency of 4 (C, Si) 
+>$c$ = number of carbon atoms  
+>$h$ = number of hydrogen atoms  
+>$n$ = number of nitrogen atoms  
+>$o$ = number of oxygen atoms 
+>$s$ = number of sulfur atoms 
 
+It is currently limited to the default element list, and specifically excludes P which has several common oxidation states (i.e., -3, 3, and 5). 
 
-It is currently limited to the default element list, and specifically excludes P until further examination because it has several common oxidation states (i.e., -3, 3, and 5). 
-
-```{r compute_AvgOSC}
+```{r compute_AvgOSC, warning=FALSE}
 DOM_sample$assigned_formulas <- compute_AvgOSC(DOM_sample$assigned_formulas,
                                                elements = DOM_sample$elements_used)
 ```
@@ -361,21 +396,6 @@ DOM_sample$assigned_formulas %>%
 ```
 
 
-#### Kendrick Mass Defect and zscore
+#### Kroll Diagram
 
-[]
-
-```{r compute_KMD_CH2}
-DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
-  compute_z_CH2() %>%
-  compute_KMD_CH2(selection = "meas") %>%
-  compute_KMD_CH2(selection = "theor")
-```
-
-```{r results compute_KMD_CH2}
-DOM_sample$assigned_formulas %>%
-  dplyr::arrange(class_element, O, KMD_CH2_theor, mz) %>%
-  dplyr::select(chem_formula, mz, theor_mz, KMD_CH2_meas, KMD_CH2_theor) %>%
-  head()
-```
-
+[describe and plot Kroll diagram]
