@@ -1,9 +1,6 @@
 To-do list:
 
-1. complete van Krevelen panel by class_element
-2. revise VK plot for 25% groups to fix color to groups
 3. create Kroll diagram
-4. create function to eliminate LAS and other known laboratory contaminants once KMD series have been computed
 5. create a plot for H/C vs C number, O/C vs C number, DBE (or DBE minus O) vs C number
 6. create factor variable for mass ranges? (use pretty() or modulus 100 to set range)
 7. create bar plot for factor variables as a function of rel. abund. &  formula number

@@ -35,9 +35,10 @@ plot_VK_groups <- function(data, var = "group_25perc", plot_title = "", panel = 
     ggplot2::scale_color_brewer(palette = "GnBu", direction = -1) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
-                   axis.title = element_text(face = "bold"),
-                   legend.title = element_blank(),
-                   legend.text = element_text(size = 12)) +
+                   legend.title = element_text(size = 12, face = "bold"),
+                   legend.text = element_text(size = 12),
+                   strip.text = element_text(face = "bold"),
+                   axis.title = element_text(face = "bold")) +
     ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 4))) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "O/C", y = "H/C") +

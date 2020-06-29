@@ -31,9 +31,10 @@ plot_VK_flat <- function(data, plot_title = "", panel = FALSE,
     ggplot2::geom_point(size = 1, na.rm = TRUE, alpha = 0.1) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
-                   axis.title = element_text(face = "bold"),
                    legend.title = element_text(size = 12, face = "bold"),
-                   legend.text = element_text(size = 12)) +
+                   legend.text = element_text(size = 12),
+                   strip.text = element_text(face = "bold"),
+                   axis.title = element_text(face = "bold")) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "O/C", y = "H/C") +
     ggplot2::scale_x_continuous(limits = c(0, 1.4), breaks = seq(0.0, 1.2, by = 0.3)) +
