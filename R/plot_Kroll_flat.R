@@ -1,9 +1,9 @@
-#' plot_Kroll_25perc_groups
+#' plot_Kroll_flat
 #'
 #' This function makes a Kroll diagram that plots average carbon oxidation
-#' states against carbon number (Kroll et al. 2011). It also shows the
-#' intensities of the detected ions by their percent contribution to total
-#' assigned abundance.
+#' states against carbon number (Kroll et al. 2011). It contains no information
+#' about the intensities of the detected ions. The darker areas are where the
+#' highest number of formulas are plotted.
 #'
 #' @param data a tibble containing the assigned molecular formulas
 #' @param plot_title a character string containing the sample name
@@ -18,29 +18,16 @@
 #' @importFrom ggplot2 aes element_text
 #'
 #' @export
-plot_Kroll_25perc_groups <- function(data, plot_title = "", panel = FALSE,
-                                     var_panel, num_col = 2) {
-  # plotting highest values on top
-  data <- data %>%
-    dplyr::arrange(.data$rel_abund)
-
-  # RColorBrewer::display.brewer.pal(n = 9, name = "GnBu")
-  # RColorBrewer::brewer.pal(n = 9, name = "GnBu")
-  # assign colors to levels
-  blueGreenPalette <- c("#084081", "#4EB3D3", "#A8DDB5", "#E0F3DB")
-  names(blueGreenPalette) <- levels(.data$group_25perc)
-
-  #create plot
+plot_Kroll_flat <- function(data, plot_title = "", panel = FALSE,
+                            var_panel, num_col = 2) {
   Kroll <- ggplot2::ggplot(data, aes(x = .data$C, y = .data$AvgOSC)) +
-    ggplot2::geom_point(aes(color = .data$group_25perc), size = 2, na.rm = TRUE, alpha = 0.8) +
-    ggplot2::scale_color_manual(name = "Ranked by\n% Abund.", values = blueGreenPalette) +
+    ggplot2::geom_point(size = 1, na.rm = TRUE, alpha = 0.1) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
                    legend.title = element_text(size = 12, face = "bold"),
                    legend.text = element_text(size = 12),
                    strip.text = element_text(face = "bold"),
                    axis.title = element_text(face = "bold")) +
-    ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 4))) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "C", y = "AvgOSC") +
     ggplot2::  scale_x_continuous(limits = c(0, 40), breaks = seq(0, 40, by = 10)) +

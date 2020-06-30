@@ -26,6 +26,10 @@
 #' @export
 plot_VK_25perc_groups <- function(data, plot_title = "", panel = FALSE,
                                   var_panel, num_col = 2) {
+  # plotting highest values on top
+  data <- data %>%
+    dplyr::arrange(.data$rel_abund)
+
   # RColorBrewer::display.brewer.pal(n = 9, name = "GnBu")
   # RColorBrewer::brewer.pal(n = 9, name = "GnBu")
   # assign colors to levels

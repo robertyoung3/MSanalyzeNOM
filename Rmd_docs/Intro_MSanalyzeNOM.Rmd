@@ -328,13 +328,13 @@ plot_VK_25perc_groups(DOM_sample$assigned_formulas, plot_title = DOM_sample$samp
 
 #### Kendrick Mass Defects and z* values
 
-In mass spectrometry, mass defect is commonly defined as the difference between a compound's exact mass and its nominal mass (e.g., the theoretical monoisotopic mass of $C_{11}H_{16}O$ is 164.12012u, so it's mass defect is 0.12012u). $$^{12}C$$ is defined as having a zero mass defect ($$12.00000u - 12u$$). Other elemental isotopes have negative mass defects (e.g., $$^{16}O = 15.99491u - 16u$$ and $$^{35}Cl = 34.96885u - 35u$$), or positive mass defects (e.g., $$^{1}H = 1.00783u - 1u$$), with the result that each chemical formula has a relatively unique monoisotopic mass that can be detected with accurate mass measurement. Mass defects allow accurate formula assignment and confirmation from measured accurate masses, and facilitate the search for compounds of interest through mass defect filtering (Sleno 2011). 
+In mass spectrometry, mass defect is commonly defined as the difference between a compound's exact mass and its nominal mass (e.g., the theoretical monoisotopic mass of $C_{11}H_{16}O$ is 164.12012u, so it's mass defect is 0.12012u). $^{12}C$ is defined as having a zero mass defect (12.00000u - 12u). Other elemental isotopes have negative mass defects (e.g., $^{16}O$ = 15.99491u - 16u and $^{35}Cl$ = 34.96885u - 35u), or positive mass defects (e.g., $^{1}H$ = 1.00783u - 1u), with the result that each chemical formula has a relatively unique monoisotopic mass that can be detected with accurate mass measurement. Mass defects allow accurate formula assignment and confirmation from measured accurate masses, and facilitate the search for compounds of interest through mass defect filtering (Sleno 2011). 
 
-Ordinarily, the members of a homologous series with a $$-CH_2-$$ repeating unit (e.g., LAS surfactants with different alkyl chain lengths) differ by a mass of 14.01565u, and a mass defect of 0.01565u. Kendrick masses (Kendrick 1963, Hughey et al. 2001) are computed by multiplying every accurate mass by 14u/14.01565u, so that members of the same $$-CH_2-$$ homologous series differ by a mass of 14.0000, and have identical Kendrick mass defects. The same logic can be applied to other repeating units such as $$CO_2$$ or $$H_2O$$.
+Ordinarily, the members of a homologous series with a $-CH_2-$ repeating unit (e.g., LAS surfactants with different alkyl chain lengths) differ by a mass of 14.01565u, and a mass defect of 0.01565u. Kendrick masses (Kendrick 1963, Hughey et al. 2001) are computed by multiplying every accurate mass by 14u/14.01565u, so that members of the same $-CH_2-$ homologous series differ by a mass of 14.0000, and have identical Kendrick mass defects. The same logic can be applied to other repeating units such as $CO_2$ or $H_2O$.
 
-The MSanalyzeNOM package uses the *compute_KMD_CH2()* function to compute Kendrick mass defects (KMD) for measured or theoretical mass where $$-CH_2-$$ (14.01565u) is the repeating unit. The theoretical Kendrick mass defects will be identical, subject to rounding errors, and the measured Kendrick mass defects will reflect additional measurement errors. The *compute_KMD_CH2()* function produces separate column names for measured and theoretical Kendrick mass defects. In addition, the number of digits can be specified to limit or explore rounding errors in the KMD calculation.
+The MSanalyzeNOM package uses the *compute_KMD_CH2()* function to compute Kendrick mass defects (KMD) for measured or theoretical mass where $-CH_2-$ (14.01565u) is the repeating unit. The theoretical Kendrick mass defects will be identical, subject to rounding errors, and the measured Kendrick mass defects will reflect additional measurement errors. The *compute_KMD_CH2()* function produces separate column names for measured and theoretical Kendrick mass defects. In addition, the number of digits can be specified to limit or explore rounding errors in the KMD calculation.
 
-Because it is possible for different homologous series to have very similar KMDs, or identical KMDs due to rounding, z* values also separate compounds by their membership in a nominal mass series. For example, the members of a homologous series with a $$-CH_2-$$ repeating unit differ from each other by a nominal mass of 14u. The *compute_z_CH2()* function produces up to 14 unique z* values to ensure that members of the same $$-CH_2-$$ homologous series differ by a nominal mass of 14u.
+Because it is possible for different homologous series to have very similar KMDs, or identical KMDs due to rounding, z* values also separate compounds by their membership in a nominal mass series. For example, the members of a homologous series with a $-CH_2-$ repeating unit differ from each other by a nominal mass of 14u. The *compute_z_CH2()* function produces up to 14 unique z* values to ensure that members of the same $-CH_2-$ homologous series differ by a nominal mass of 14u.
 
 ```{r compute_KMD_CH2}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
@@ -380,7 +380,7 @@ The average oxidation state of carbon (AvgOSC), or nominal oxidation state of ca
 
 A simpler calculation for several comment elements is:
 
->$$- \frac{h − 3n - 2o - 2s}{c}
+>$$- \frac{h − 3n - 2o - 2s}{c}$$
 >**where:**  
 >$c$ = number of carbon atoms  
 >$h$ = number of hydrogen atoms  
@@ -407,8 +407,9 @@ DOM_sample$new_assigned_formulas %>%
 
 The Kroll diagram (Kroll et al. 2011) plots the average carbon oxidation state as a function of carbon number, where the bottom left reflects the smallest, most reduced compounds and the top right reflects the smallest, most oxidized compounds. As above, the  diagram can be colored by abundance to identify the region of the Kroll diagram where the greatest abundance lies.
 
-```{r plot_Kroll_25_perc_groups, messages=FALSE, fig.height=3.5, fig.width=5}
-plot_Kroll_25perc_groups(DOM_sample$new_assigned_formulas, plot_title = DOM_sample$sample_name)
+```{r plot_Kroll_gradient, messages=FALSE, fig.height=3.5, fig.width=5}
+plot_Kroll_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund", 
+                    plot_title = DOM_sample$sample_name)
 ```
 
 As above, the *plot_Kroll_25perc_groups()* function can separate the assigned formulas by elemental class using the *panel* and *var_panel* arguments.
