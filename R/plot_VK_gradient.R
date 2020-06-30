@@ -12,7 +12,8 @@
 #' aromatic region based on a modified aromaticity index >= 0.5 in accordance
 #' with Koch & Dittmar 2006.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "HtoC"
+#'   and "OtoC"
 #' @param var a character string containing the continuous variable column name
 #'   used to establish the color gradient (default = "rel_abund")
 #' @param plot_title a character string containing the sample name (default =

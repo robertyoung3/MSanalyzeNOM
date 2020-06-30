@@ -5,7 +5,8 @@
 #' intensities of the detected ions on a gradient color scale (typically as a
 #' function of relative or percent abundance).
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "AvgOSC" (from
+#'   the computeAvgOSC() function) and "C"
 #' @param var a character string containing the continuous variable column name
 #'   used to establish the color gradient (default = "rel_abund")
 #' @param plot_title a character string containing the sample name

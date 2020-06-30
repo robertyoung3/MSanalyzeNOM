@@ -7,8 +7,8 @@
 compute_AvgOSC(df, elements = c("C", "H", "N", "O", "S"))
 }
 \arguments{
-\item{df}{a tibble containing MS data, including element numbers for each
-elemental composition (e.g., C = 12, H = 26)}
+\item{df}{a tibble containing a table of the assigned elements with a column name
+for each element (e.g., "C", "H", "N", "O" and "S")}
 
 \item{elements}{a character vector of the elements used for formula
 assignment (default = CHNOS)}

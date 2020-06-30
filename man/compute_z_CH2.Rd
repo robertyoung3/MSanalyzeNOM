@@ -7,7 +7,7 @@
 compute_z_CH2(df)
 }
 \arguments{
-\item{df}{a tibble containing MS data}
+\item{df}{a tibble containing the following column name: "mz"}
 }
 \value{
 df with a column containing the z* values

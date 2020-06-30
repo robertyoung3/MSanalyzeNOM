@@ -7,7 +7,10 @@
 get_CHNOS_element_class(data)
 }
 \arguments{
-\item{data}{a tibble containing the assigned molecular formulas}
+\item{data}{a tibble containing a table of the assigned elements with a
+column name for each element (e.g., "C", "H", "N", "O" and "S") and a
+column named "rel_abund" containing the assigned formulas' relative
+abundances}
 }
 \value{
 data with a new column containing the element classes as ordered

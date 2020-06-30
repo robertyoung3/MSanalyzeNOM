@@ -5,7 +5,8 @@
 #' about the intensities of the detected ions. The darker areas are where the
 #' highest number of formulas are plotted.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "AvgOSC" (from
+#'   the computeAvgOSC() function) and "C"
 #' @param plot_title a character string containing the sample name
 #' @param panel a logical value specifying whether a panel will be used (default
 #'   = FALSE)

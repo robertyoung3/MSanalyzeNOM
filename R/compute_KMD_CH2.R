@@ -9,19 +9,19 @@
 #' assigning formulas to measured m/z values. The number of digits can be
 #' specified to limit rounding errors in the KMD calculation.
 #'
-#' @param df a tibble containing MS data
-#' @param selection a character string in c("meas", "theor") identifying the
+#' @param df a tibble containing the following column names: "mz" and "theor_mz"
+#' @param KMDtype a character string in c("meas", "theor") identifying the
 #'   desired calculation
 #' @param num_digits an integer indicating the number of desired digits for the
 #'   KMD value (default = 4)
 #'
 #' @return df with a column containing the desired KMD values
 #' @export
-compute_KMD_CH2 <- function (df, selection = "theor", num_digits = 4) {
-  if (!selection %in% c("meas", "theor")) {
+compute_KMD_CH2 <- function (df, KMDtype = "theor", num_digits = 4) {
+  if (!KMDtype %in% c("meas", "theor")) {
     stop('Select "meas" to compute KMD_CH2 for the measured mz, or "theor" for the theoretical mz.')
   }
-  if (selection == "theor") {
+  if (KMDtype == "theor") {
     mass <- "theor_mz"
     col_name <- "KMD_CH2_theor"
   } else {

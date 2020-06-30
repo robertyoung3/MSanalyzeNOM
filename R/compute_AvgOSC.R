@@ -7,8 +7,8 @@
 #' reserved due to its number of oxidation states (most common = -3, 3, and
 #' especially 5). The halogens (X = -1) were also reserved.
 #'
-#' @param df a tibble containing MS data, including element numbers for each
-#'   elemental composition (e.g., C = 12, H = 26)
+#' @param df a tibble containing a table of the assigned elements with a column name
+#' for each element (e.g., "C", "H", "N", "O" and "S")
 #' @param elements a character vector of the elements used for formula
 #'   assignment (default = CHNOS)
 #'
@@ -25,7 +25,7 @@ compute_AvgOSC <- function (df, elements = c("C", "H", "N", "O", "S")) {
 
   # identify elements that are not in formula elements
   # print error message
-  # long-term: add halogens (X) and possibly P
+  # long-term: add halogens (X)
   for (i in 1:length(elements)) {
     if (!elements[[i]] %in% formula_elements) {
       message("The AvgOSC calculation is currently limited to CHNOS elements.")

@@ -7,7 +7,8 @@
 plot_VK_flat(data, plot_title = "", panel = FALSE, var_panel, num_col = 2)
 }
 \arguments{
-\item{data}{a tibble containing the assigned molecular formulas}
+\item{data}{a tibble containing containing the following column names: "HtoC"
+and "OtoC"}
 
 \item{plot_title}{a character string containing the sample name}
 

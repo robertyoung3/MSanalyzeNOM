@@ -11,7 +11,8 @@
 #' aromatic region based on a modified aromaticity index >= 0.5 in accordance
 #' with Koch & Dittmar 2006.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "HtoC", "OtoC",
+#'   "group_25perc" (from the get_25perc_groups() function), and "rel_abund"
 #' @param plot_title a character string containing the sample name
 #' @param panel a logical value specifying whether a panel will be used (default
 #'   = FALSE)

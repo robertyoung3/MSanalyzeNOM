@@ -4,7 +4,7 @@
 #' repeating unit, for use with Kendrick mass defects on the same basis for
 #' formula assignment or visualization (Hsu et al. 1992, Stenson et al. 2003).
 #'
-#' @param df a tibble containing MS data
+#' @param df a tibble containing the following column name: "mz"
 #'
 #' @return df with a column containing the z* values
 #' @export

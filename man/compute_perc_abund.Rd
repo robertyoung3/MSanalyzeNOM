@@ -7,7 +7,7 @@
 compute_perc_abund(data)
 }
 \arguments{
-\item{data}{a tibble containing the assigned molecular formulas}
+\item{data}{a tibble containing the following column name: "rel_abund"}
 }
 \value{
 data with a new column containing the computed percent abundances

@@ -8,10 +8,10 @@ get_all_detected_ions(no_hits, assigned_formulas)
 }
 \arguments{
 \item{no_hits}{a tibble containing mz's and relative abundances for the "no
-hits"}
+hits" under the following column names: "mz" and "rel_abund"}
 
-\item{assigned_formulas}{a tibble containing the assigned formulas' mass
-spectrometry data}
+\item{assigned_formulas}{a tibble containing mz's and relative abundances for
+the assigned formulas under the following column names: "mz" and "rel_abund"}
 }
 \value{
 a tibble containing the combined mz's and relative abundances

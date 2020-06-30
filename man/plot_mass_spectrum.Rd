@@ -7,7 +7,7 @@
 plot_mass_spectrum(data, plot_title, min_x = NULL, max_x = NULL)
 }
 \arguments{
-\item{data}{a tibble containing the assigned molecular formulas}
+\item{data}{a tibble containing the following column names: "mz" and "rel_abund"}
 
 \item{plot_title}{a character string containing the sample name}
 

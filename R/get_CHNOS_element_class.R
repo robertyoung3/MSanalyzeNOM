@@ -6,7 +6,10 @@
 #' (CHNOS). The element classes are ordered by decreasing relative abundances,
 #' so that the most abundant element class appears first.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing a table of the assigned elements with a
+#'   column name for each element (e.g., "C", "H", "N", "O" and "S") and a
+#'   column named "rel_abund" containing the assigned formulas' relative
+#'   abundances
 #'
 #' @importFrom rlang .data
 #'

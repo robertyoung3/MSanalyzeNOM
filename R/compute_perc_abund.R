@@ -3,7 +3,7 @@
 #' This function computes percent abundances from the relative abundances of
 #' assigned formulas.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column name: "rel_abund"
 #'
 #' @importFrom rlang .data
 #'

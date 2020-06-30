@@ -7,11 +7,13 @@
 compute_elemental_ratios(data, num = "H", denom = "C")
 }
 \arguments{
-\item{data}{a tibble containing the MS data for all assigned elemental compositions}
+\item{data}{a tibble containing column names for the desired elements (e.g.,
+"H" or "C")}
 
 \item{num}{character string for the element in the numerator (default = "H")}
 
-\item{denom}{character string for the element in the denominator (default = "C")}
+\item{denom}{character string for the element in the denominator (default =
+"C")}
 }
 \value{
 data with a new column containing the computed elemental ratio

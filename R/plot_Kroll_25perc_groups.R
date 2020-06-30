@@ -5,7 +5,9 @@
 #' intensities of the detected ions by their percent contribution to total
 #' assigned abundance.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "AvgOSC" (from
+#'   the computeAvgOSC() function), "C", "group_25perc" (from the
+#'   get_25perc_groups() function), and "rel_abund"
 #' @param plot_title a character string containing the sample name
 #' @param panel a logical value specifying whether a panel will be used (default
 #'   = FALSE)

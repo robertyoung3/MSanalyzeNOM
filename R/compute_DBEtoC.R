@@ -3,7 +3,7 @@
 #' This function computes the DBE/C ratio, which is used as an estimate for
 #' aromaticity.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "DBE" and "C"
 #'
 #' @importFrom rlang .data
 #'

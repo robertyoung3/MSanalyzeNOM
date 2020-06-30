@@ -4,7 +4,7 @@
 #' 25%", "third 25%", and "bottom 25%") by their percent contribution to total
 #' assigned abundance.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "rel_abund"
 #'
 #' @importFrom rlang .data
 #'

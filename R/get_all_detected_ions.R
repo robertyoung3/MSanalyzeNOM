@@ -5,9 +5,9 @@
 #' formulas ("no hits").
 #'
 #' @param no_hits a tibble containing mz's and relative abundances for the "no
-#'   hits"
-#' @param assigned_formulas a tibble containing the assigned formulas' mass
-#'   spectrometry data
+#'   hits" under the following column names: "mz" and "rel_abund"
+#' @param assigned_formulas a tibble containing mz's and relative abundances for
+#'   the assigned formulas under the following column names: "mz" and "rel_abund"
 #'
 #' @importFrom rlang .data
 #'

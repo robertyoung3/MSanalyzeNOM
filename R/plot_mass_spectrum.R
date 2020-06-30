@@ -3,7 +3,7 @@
 #' This function plots the sample mass spectrum.The minimum and maximum mz
 #' values can be specified to plot a specific region of the mass spectrum.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column names: "mz" and "rel_abund"
 #' @param plot_title a character string containing the sample name
 #' @param min_x a numeric containing the minimum mz value to plot (default = NULL)
 #' @param max_x a numeric containing the maximum mz value to plot (default = NULL)

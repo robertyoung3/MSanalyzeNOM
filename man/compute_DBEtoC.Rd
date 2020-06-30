@@ -7,7 +7,7 @@
 compute_DBEtoC(data)
 }
 \arguments{
-\item{data}{a tibble containing the assigned molecular formulas}
+\item{data}{a tibble containing the following column names: "DBE" and "C"}
 }
 \value{
 data with a new column containing the computed DBE/C ratios

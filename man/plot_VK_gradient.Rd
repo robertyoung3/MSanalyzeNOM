@@ -14,7 +14,8 @@ plot_VK_gradient(
 )
 }
 \arguments{
-\item{data}{a tibble containing the assigned molecular formulas}
+\item{data}{a tibble containing the following column names: "HtoC"
+and "OtoC"}
 
 \item{var}{a character string containing the continuous variable column name
 used to establish the color gradient (default = "rel_abund")}

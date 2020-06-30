@@ -7,7 +7,9 @@
 #' on the other detected ions and assigned formulas, which can be reduced in
 #' number due to the presence of high abundance contaminants.
 #'
-#' @param df a tibble containing the assigned molecular formulas
+#' @param df a tibble containing the following column names: "chem_formula",
+#'   "class_hetero", "KMD_CH2_theor" (from the compute_KMD_CH2() function),
+#'   "z_CH2" (from the compute_z_CH2() function), and "rel_abund"
 #'
 #' @importFrom rlang .data
 #'

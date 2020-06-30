@@ -3,7 +3,7 @@
 #' This internal function arranges percent abundances from least to greatest and computes
 #' their cumulative percent abundances. It is called by get_25perc_groups.
 #'
-#' @param data a tibble containing the assigned molecular formulas
+#' @param data a tibble containing the following column name: "perc_abund"
 #'
 #' @importFrom rlang .data
 #'

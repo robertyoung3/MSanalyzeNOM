@@ -4,12 +4,12 @@
 \alias{compute_KMD_CH2}
 \title{compute_KMD_CH2}
 \usage{
-compute_KMD_CH2(df, selection = "theor", num_digits = 4)
+compute_KMD_CH2(df, KMDtype = "theor", num_digits = 4)
 }
 \arguments{
-\item{df}{a tibble containing MS data}
+\item{df}{a tibble containing the following column names: "mz" and "theor_mz"}
 
-\item{selection}{a character string in c("meas", "theor") identifying the
+\item{KMDtype}{a character string in c("meas", "theor") identifying the
 desired calculation}
 
 \item{num_digits}{an integer indicating the number of desired digits for the

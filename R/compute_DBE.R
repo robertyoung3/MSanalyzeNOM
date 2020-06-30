@@ -6,7 +6,8 @@
 #'
 #' where N_i is the element number and V_i is the valence for each element i.
 #'
-#' @param df a tibble containing the assigned molecular formulas
+#' @param df a tibble containing a table of the assigned elements with a column name
+#' for each element (e.g., "C", "H", "N", "O" and "S")
 #' @param elements a character vector of the elements used for formula assignment (default = CHNOS)
 #'
 #' @importFrom rlang .data
@@ -17,6 +18,16 @@ compute_DBE <- function(df, elements = c("C", "H", "N", "O", "S")) {
   #create a table of elements, ordered by elements
   temp <- df %>%
     dplyr::select(elements)
+
+  formula_elements <- c("C", "H", "N", "O", "P", "S")
+
+  # identify elements that are not in formula elements
+  # print error message
+  for (i in 1:length(elements)) {
+    if (!elements[[i]] %in% formula_elements) {
+      message("The DBE calculation is currently limited to CHNOPS elements.")
+    }
+  }
 
   # extract valences from elemental_data for elements
   # then order by elements (same as temp)

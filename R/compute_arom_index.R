@@ -12,9 +12,10 @@
 #' aromatic structure, and a (modified) aromaticity index >= 0.67 indicates a
 #' condensed aromatic structure.
 #'
-#' @param df a tibble containing MS data, including element numbers for each
-#'   elemental composition (e.g., C = 12, H = 26)
-#' @param elements a character vector of the elements used for formula assignment (default = CHNOS)
+#' @param df a tibble containing a table of the assigned elements with a column name
+#' for each element (e.g., "C", "H", "N", "O" and "S")
+#' @param elements a character vector of the elements used for formula
+#'   assignment (default = CHNOS)
 #' @param AItype a character string where "AI" = aromaticity index or "ModAI" =
 #'   modified aromaticity index
 #'
@@ -31,7 +32,6 @@ compute_arom_index <- function (df, elements = c("C", "H", "N", "O", "S"), AItyp
 
   # identify elements that are not in formula elements
   # print error message
-  # long-term: sum valence 1 elements to include halogens (X)
   for (i in 1:length(elements)) {
     if (!elements[[i]] %in% formula_elements) {
       message("The aromaticity index calculation is currently limited to CHNOPS elements.")

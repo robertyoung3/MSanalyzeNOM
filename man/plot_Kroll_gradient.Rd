@@ -14,7 +14,8 @@ plot_Kroll_gradient(
 )
 }
 \arguments{
-\item{data}{a tibble containing the assigned molecular formulas}
+\item{data}{a tibble containing the following column names: "AvgOSC" (from
+the computeAvgOSC() function) and "C"}
 
 \item{var}{a character string containing the continuous variable column name
 used to establish the color gradient (default = "rel_abund")}

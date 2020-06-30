@@ -7,7 +7,8 @@
 compute_DBE(df, elements = c("C", "H", "N", "O", "S"))
 }
 \arguments{
-\item{df}{a tibble containing the assigned molecular formulas}
+\item{df}{a tibble containing a table of the assigned elements with a column name
+for each element (e.g., "C", "H", "N", "O" and "S")}
 
 \item{elements}{a character vector of the elements used for formula assignment (default = CHNOS)}
 }
