@@ -31,7 +31,6 @@ plot_Kroll_flat <- function(data, plot_title = "", panel = FALSE,
                    axis.title = element_text(face = "bold")) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "C", y = "AvgOSC") +
-#    ggplot2::  scale_x_continuous(limits = c(0, 40), breaks = seq(0, 40, by = 10)) +
     ggplot2::scale_y_continuous(limits = c(-3, 3), breaks = seq(-3, 3, by = 1)) +
     ggplot2::annotate("text", x = 5, y = 2.5, label = "CO[2] == 4", parse = TRUE,
              fontface = 2, size = 4) +
