@@ -32,7 +32,7 @@ plot_Kroll_25perc_groups <- function(data, plot_title = "", panel = FALSE,
   blueGreenPalette <- c("#084081", "#4EB3D3", "#A8DDB5", "#E0F3DB")
   names(blueGreenPalette) <- levels(.data$group_25perc)
 
-  if (max(.data$c) < 40) {
+  if (max(.data$C) < 40) {
     xlim <- 40
   } else {xlim <- max(.data$C) / 8}
 
