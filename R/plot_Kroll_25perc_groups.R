@@ -32,10 +32,6 @@ plot_Kroll_25perc_groups <- function(data, plot_title = "", panel = FALSE,
   blueGreenPalette <- c("#084081", "#4EB3D3", "#A8DDB5", "#E0F3DB")
   names(blueGreenPalette) <- levels(.data$group_25perc)
 
-  if (max(.data$C) < 40) {
-    xlim <- 40
-  } else {xlim <- max(.data$C) / 8}
-
   #create plot
   Kroll <- ggplot2::ggplot(data, aes(x = .data$C, y = .data$AvgOSC)) +
     ggplot2::geom_point(aes(color = .data$group_25perc), size = 2, na.rm = TRUE, alpha = 0.8) +
@@ -50,10 +46,10 @@ plot_Kroll_25perc_groups <- function(data, plot_title = "", panel = FALSE,
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "C", y = "AvgOSC") +
     ggplot2::scale_y_continuous(limits = c(-3, 3), breaks = seq(-3, 3, by = 1)) +
-    ggplot2::annotate("text", x = xlim, y = 2.5, label = "CO[2] == 4", parse = TRUE,
-             fontface = 2, size = 4) +
-    ggplot2::annotate("text", x = xlim, y = -2.5, label = "CH[4] == -4", parse = TRUE,
-             fontface = 2, size = 4)
+    ggplot2::annotate("text", x = 5, y = 2.5, label = "CO[2] == 4", parse = TRUE,
+                      family = "serif", size = 4, hjust = "inward") +
+    ggplot2::annotate("text", x = 5, y = -2.5, label = "CH[4] == -4", parse = TRUE,
+                      family = "serif", size = 4, hjust = "inward")
 
   # implement panel
   if (panel == TRUE) {

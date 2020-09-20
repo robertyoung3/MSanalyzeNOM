@@ -51,9 +51,9 @@ plot_Kroll_gradient <- function(data, var = "rel_abund", plot_title = "",
     ggplot2::labs(x = "C", y = "AvgOSC") +
     ggplot2::scale_y_continuous(limits = c(-3, 3), breaks = seq(-3, 3, by = 1)) +
     ggplot2::annotate("text", x = 5, y = 2.5, label = "CO[2] == 4", parse = TRUE,
-             fontface = 2, size = 4) +
+                      family = "serif", size = 4, hjust = "inward") +
     ggplot2::annotate("text", x = 5, y = -2.5, label = "CH[4] == -4", parse = TRUE,
-             fontface = 2, size = 4)
+                      family = "serif", size = 4, hjust = "inward")
 
   # implement panel
   if (panel == TRUE) {
