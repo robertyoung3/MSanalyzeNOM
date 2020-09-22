@@ -9,7 +9,7 @@
 #' @return df with a column containing the z* values
 #' @export
 compute_z_CH2 <- function(df) {
-  df$z_CH2 <- round(df$mz, digits = 0)
+  df$z_CH2 <- round(df$mz * (14/14.01565), digits = 0)
   df$z_CH2 <- df$z_CH2 %% 14
   df$z_CH2 <- df$z_CH2 - 14
   return(df)
