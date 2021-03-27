@@ -46,7 +46,7 @@ plot_VK_gradient <- function(data, var = "rel_abund", plot_title = "", panel = F
   # RColorBrewer::brewer.pal(n = 9, name = "GnBu")
   # "#F7FCF0" "#E0F3DB" "#CCEBC5" "#A8DDB5" "#7BCCC4" "#4EB3D3" "#2B8CBE" "#0868AC" "#084081"
   VK <- ggplot2::ggplot(data, aes(x = .data$OtoC, y = .data$HtoC)) +
-    ggplot2::geom_point(aes(color = .data[[var]]), size = 1, na.rm = TRUE, alpha = 0.8) +
+    ggplot2::geom_point(aes(color = .data[[var]]), size = 2, na.rm = TRUE, alpha = 0.8) +
     ggplot2::scale_color_gradient(name = label,
                                   low = "#F7FCF0", high = "#084081") +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +

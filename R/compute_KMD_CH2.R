@@ -28,9 +28,17 @@ compute_KMD_CH2 <- function (df, KMDtype = "theor", num_digits = 4) {
     mass <- "mz"
     col_name <- "KMD_CH2_meas"
   }
+  mass_C <- 12
+  mass_H <- 1.0078250
+  mass_CH2 <- mass_C + 2*mass_H
+  nominal_mass_CH2 <- round(mass_CH2, digits = 0)
 
-  Kendrick_mass <- df[[mass]] * (14/14.01565)
-  nominal_mass <- round(df[[mass]], digits = 0)
-  df[[col_name]] <- round(nominal_mass - Kendrick_mass, digits = num_digits)
+  Kendrick_mass <- df[[mass]] * (nominal_mass_CH2/mass_CH2)
+  nominal_Kendrick_mass <- round(Kendrick_mass, digits = 0)
+  df[[col_name]] <- round(nominal_Kendrick_mass - Kendrick_mass,
+                          digits = num_digits)
+  df$z_CH2 <- nominal_Kendrick_mass %% nominal_mass_CH2
+  df$z_CH2 <- df$z_CH2 - nominal_mass_CH2
+
   return(df)
 }

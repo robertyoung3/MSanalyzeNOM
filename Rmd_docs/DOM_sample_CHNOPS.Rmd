@@ -1,0 +1,242 @@
+---
+title: "DOM Sample with CHNOPS"
+author: "Robert B. Young"
+date: "10/25/2020"
+output: html_notebook
+---
+
+
+### Preliminaries
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+options(digits = 8)
+```
+
+The following code loads the required R packages. Then "enviPat" package isn't loaded directly, but the "isotopes" data file in the "enviPat" package is used to compute the monoisotopic masses.
+
+```{r load packages}
+library(tidyverse)
+library(janitor)
+library(here)
+library(MSanalyzeNOM)
+```
+
+### Get Data File Name
+
+The following code identifies the paths to all files in the "Data" folder of the working directory.
+
+```{r get filenames}
+(filenames <- list.files(here("new_data"), full.names = TRUE))
+```
+
+### New Function for Additional Elements
+
+Rather than inputting elements_used, I could extract them from the first column of the General Sheet. To address isotopes like 35Cl and 37Cl, I would have to use the space after each heteroatom for extraction. Note:C and H are given in PetroOrg.
+
+I no longer see the point of keeping the filename with the extension or the original filepath. 
+
+```{r create list element and read sheetnames}
+file <- filenames[1]
+ion_technique = "NegESI"
+
+# will elements_used be necessary?
+elements_used = c("C", "H", "N", "O", "P", "S")
+# glimpse(sample_data)
+
+sample_data <- list(sample_name = tools::file_path_sans_ext(basename(file)),
+                    ion_technique = ion_technique,
+                    elements_used = elements_used)
+
+  ## (1) read no hits data
+sample_data$no_hits <- file %>%
+  readxl::read_excel(sheet = "No Hit", col_names = FALSE, skip = 2) %>%
+  dplyr::select(2, 4)
+colnames(sample_data$no_hits) <- c("mz", "rel_abund")
+
+  ## (2) read assigned formula data
+  #### (a) get sheet names
+sheetnames <- readxl::excel_sheets(file)
+
+  #### (b) subset to exclude isotopes and sheetnames with 3 or more consecutive letters (data summaries)
+sheetnames <- sheetnames[stringr::str_detect(sheetnames, "[[:alpha:]]{3,}", negate = TRUE)]
+
+```
+
+```{r regular expressions for different cases}
+  
+  # regex to match any chemical element
+regex_element <- "A[cglmrstu]|B[aehikr]|C[adeflmnorsu]|D[bsy]|E[rsu]|F[elmr]|G[ade]|H[efgos]|I[nr]|Kr|L[airuv]|M[cdgnot]|N[abdehiop]|O[gs]|P[abdmortu]|R[abefghnu]|S[bcegimnr]|T[abcehilms]|Xe|Yb|Z[nr]|[BCFHIKNOPSUVWY]"
+
+# regex to extract element number with element
+regex_element_num <- "A[cglmrstu]\\d{0,3}|B[aehikr]\\d{0,3}|C[adeflmnorsu]\\d{0,3}|D[bsy]\\d{0,3}|E[rsu]\\d{0,3}|F[elmr]\\d{0,3}|G[ade]\\d{0,3}|H[efgos]\\d{0,3}|I[nr]\\d{0,3}|Kr\\d{0,3}|L[airuv]\\d{0,3}|M[cdgnot]\\d{0,3}|N[abdehiop]\\d{0,3}|O[gs]\\d{0,3}|P[abdmortu]\\d{0,3}|R[abefghnu]\\d{0,3}|S[bcegimnr]\\d{0,3}|T[abcehilms]\\d{0,3}|Xe\\d{0,3}|Yb\\d{0,3}|Z[nr]\\d{0,3}|[BCFHIKNOPSUVWY]\\d{0,3}"
+  
+regex_iso_element_num <- "\\d{0,3}A[cglmrstu]\\d{0,3}|\\d{0,3}B[aehikr]\\d{0,3}|\\d{0,3}C[adeflmnorsu]\\d{0,3}|\\d{0,3}D[bsy]\\d{0,3}|\\d{0,3}E[rsu]\\d{0,3}|\\d{0,3}F[elmr]\\d{0,3}|\\d{0,3}G[ade]\\d{0,3}|\\d{0,3}H[efgos]\\d{0,3}|\\d{0,3}I[nr]\\d{0,3}|\\d{0,3}Kr\\d{0,3}|\\d{0,3}L[airuv]\\d{0,3}|\\d{0,3}M[cdgnot]\\d{0,3}|\\d{0,3}N[abdehiop]\\d{0,3}|\\d{0,3}O[gs]\\d{0,3}|\\d{0,3}P[abdmortu]\\d{0,3}|\\d{0,3}R[abefghnu]\\d{0,3}|\\d{0,3}S[bcegimnr]\\d{0,3}|\\d{0,3}T[abcehilms]\\d{0,3}|\\d{0,3}Xe\\d{0,3}|\\d{0,3}Yb\\d{0,3}|\\d{0,3}Z[nr]\\d{0,3}|\\d{0,3}[BCFHIKNOPSUVWY]\\d{0,3}"
+
+regex_iso_element <- "\\d{0,3}A[cglmrstu]|\\d{0,3}B[aehikr]|\\d{0,3}C[adeflmnorsu]|\\d{0,3}D[bsy]|\\d{0,3}E[rsu]|\\d{0,3}F[elmr]|\\d{0,3}G[ade]|\\d{0,3}H[efgos]|\\d{0,3}I[nr]|\\d{0,3}Kr|\\d{0,3}L[airuv]|\\d{0,3}M[cdgnot]|\\d{0,3}N[abdehiop]|\\d{0,3}O[gs]|\\d{0,3}P[abdmortu]|\\d{0,3}R[abefghnu]|\\d{0,3}S[bcegimnr]|\\d{0,3}T[abcehilms]|\\d{0,3}Xe|\\d{0,3}Yb|\\d{0,3}Z[nr]|\\d{0,3}[BCFHIKNOPSUVWY]"
+
+regex_iso_element_only <- "\\d{1,3}A[cglmrstu]|\\d{1,3}B[aehikr]|\\d{1,3}C[adeflmnorsu]|\\d{1,3}D[bsy]|\\d{1,3}E[rsu]|\\d{1,3}F[elmr]|\\d{1,3}G[ade]|\\d{1,3}H[efgos]|\\d{1,3}I[nr]|\\d{1,3}Kr|\\d{1,3}L[airuv]|\\d{1,3}M[cdgnot]|\\d{1,3}N[abdehiop]|\\d{1,3}O[gs]|\\d{1,3}P[abdmortu]|\\d{1,3}R[abefghnu]|\\d{1,3}S[bcegimnr]|\\d{1,3}T[abcehilms]|\\d{1,3}Xe|\\d{1,3}Yb|\\d{1,3}Z[nr]|\\d{1,3}[BCFHIKNOPSUVWY]"
+```
+
+```{r test regex elements}
+test_string <- "Ag3 35Cl2 O2 117Ts3 "
+test_string %>%
+  stringr::str_extract_all(pattern = regex_element) %>%
+  purrr::as_vector()
+```
+
+
+```{r identify and order heteroatoms}
+heteroatoms <- sheetnames %>%
+  stringr::str_extract_all(pattern = regex_iso_element) %>%
+  purrr::as_vector() %>%
+  unique() %>%
+  str_sort()
+
+iso_heteroatoms <- heteroatoms %>%
+  stringr::str_extract_all(pattern = regex_iso_element_only) %>%
+  purrr::as_vector()
+
+non_iso_heteroatoms <- heteroatoms[!heteroatoms %in% iso_heteroatoms]
+
+(elements_used <- c("C", "H", non_iso_heteroatoms, iso_heteroatoms))
+```
+
+```{r masses of useful elements}
+# alt = read isotopes
+mass_C <- 12.0000000
+mass_13C <- 13.003354826
+mass_H <- 1.0078250
+mass_N <- 14.0030740
+mass_O <- 15.9949146    
+mass_P <- 30.9737615
+mass_S <- 31.9720707
+mass_34S <- 33.9678669    # 4.250000%
+mass_F <- 18.9984032
+mass_35Cl <- 34.9688527
+mass_37Cl <- 36.9659026
+mass_Na <- 22.9897697
+mass_e = 0.0005485
+mass_proton <- mass_H - mass_e
+`mass_Na+` <- mass_Na - mass_e
+```
+
+
+
+```{r read and process sheet1}
+# 116 = CHO_35Cl 127 = CHOP
+sheet <- sheetnames[116]
+temp_sheet <- readxl::read_excel(path = file, sheet = sheet, col_names = TRUE, skip = 2) %>%
+  clean_names() %>%
+  dplyr::select(-tidyselect::one_of("x1", "exp_m_z", "signal2noise", "molecular_formula"),
+                -tidyselect::ends_with("_c")) %>%
+  dplyr::rename(mz = recal_m_z,
+                theor_mz = theor_mass,
+                ppm_error = error,
+                rel_abund = rel_abundance,
+                DBE = dbe)
+
+
+# in the past, I computed the neutral mass by adding a proton
+# use separate function that does the same, but then recomputes adducts; alt: discard adducts
+# formulas in PetroOrg are the neutral formulas with a proton added, at least for non-adducts 
+# formulas in PetroOrg for a chlorine adduct include the correct molecular formula + 35Cl, and you get to the correct mass by subtracting [35Cl + mass_e]
+#  dplyr::mutate(class_hetero = sheet, theor_MI_mass = theor_mz + mass_proton) 
+  
+
+# adds elements to columns
+for (i in elements_used) {
+  colnames(temp_sheet)[which(temp_sheet[1,] == i) + 1] <- i
+}
+
+# removes element columns, which are now redundant
+temp_sheet <- temp_sheet %>%
+  dplyr::select(-tidyselect::matches("x[[:digit:]]+"))
+
+# strips empty columns for determining chemical formulas and heteroatoms
+temp_sheet[temp_sheet == 0] <- NA
+temp_sheet <- remove_empty(temp_sheet, which = "cols")
+
+# assemble chemical formula
+# add brackets if isotope? alt = use spaces; latter will also make stripping 1s easier
+formula_elements <- colnames(temp_sheet)[colnames(temp_sheet) %in% elements_used]
+temp_sheet$chem_formula <- ""
+for (i in formula_elements) {
+  if (temp_sheet[[i]] == 1) {
+    temp_sheet$chem_formula <- stringr::str_c(temp_sheet$chem_formula, i, " ")
+  } else {
+    temp_sheet$chem_formula <- stringr::str_c(temp_sheet$chem_formula, i, temp_sheet[[i]], " ")
+  }
+}
+
+# strip c and H for heteroatom class; str_replace with ""
+temp_sheet <- temp_sheet %>%
+  mutate(class_hetero = str_remove_all(.$chem_formula, pattern = "[CH]\\d{1,3}[[:blank:]]|[CH][[:blank:]]")) %>%
+  select(class_hetero, chem_formula, everything())
+
+sheet1 <- temp_sheet
+```
+
+
+```{r read and process sheet2}
+# 116 = CHO_35Cl 127 = CHOP
+sheet <- sheetnames[127]
+temp_sheet <- readxl::read_excel(path = file, sheet = sheet, col_names = TRUE, skip = 2) %>%
+  clean_names() %>%
+  dplyr::select(-tidyselect::one_of("x1", "exp_m_z", "signal2noise", "molecular_formula"),
+                -tidyselect::ends_with("_c")) %>%
+  dplyr::rename(mz = recal_m_z,
+                theor_mz = theor_mass,
+                ppm_error = error,
+                rel_abund = rel_abundance,
+                DBE = dbe)
+
+
+# in the past, I computed the neutral mass by adding a proton
+# use separate function that does the same, but then recomputes adducts; alt: discard adducts
+# formulas in PetroOrg are the neutral formulas with a proton added, at least for non-adducts 
+# formulas in PetroOrg for a chlorine adduct include the correct molecular formula + 35Cl, and you get to the correct mass by subtracting [35Cl + mass_e]
+#  dplyr::mutate(class_hetero = sheet, theor_MI_mass = theor_mz + mass_proton) 
+  
+
+# adds elements to columns
+for (i in elements_used) {
+  colnames(temp_sheet)[which(temp_sheet[1,] == i) + 1] <- i
+}
+
+# removes element columns, which are now redundant
+temp_sheet <- temp_sheet %>%
+  dplyr::select(-tidyselect::matches("x[[:digit:]]+"))
+
+# strips empty columns for determining chemical formulas and heteroatoms
+temp_sheet[temp_sheet == 0] <- NA
+temp_sheet <- remove_empty(temp_sheet, which = "cols")
+
+# assemble chemical formula
+# add brackets if isotope? alt = use spaces; latter will also make stripping 1s easier
+formula_elements <- colnames(temp_sheet)[colnames(temp_sheet) %in% elements_used]
+temp_sheet$chem_formula <- ""
+for (i in formula_elements) {
+  if (temp_sheet[[i]] == 1) {
+    temp_sheet$chem_formula <- stringr::str_c(temp_sheet$chem_formula, i, " ")
+  } else {
+    temp_sheet$chem_formula <- stringr::str_c(temp_sheet$chem_formula, i, temp_sheet[[i]], " ")
+  }
+}
+
+# strip c and H for heteroatom class; str_replace with ""
+temp_sheet <- temp_sheet %>%
+  mutate(class_hetero = str_remove_all(.$chem_formula, pattern = "[CH]\\d{1,3}[[:blank:]]|[CH][[:blank:]]")) %>%
+  select(class_hetero, chem_formula, everything())
+
+sheet2 <- temp_sheet
+```
+
+
+```{r combine sheets}
+temp_sheet_all <- sheet1 %>%
+  bind_rows(sheet2)
+
+temp_sheet_all[is.na(temp_sheet_all)] <- 0
+```
+
