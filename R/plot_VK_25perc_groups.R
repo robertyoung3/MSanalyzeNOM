@@ -45,7 +45,7 @@ plot_VK_25perc_groups <- function(data, plot_title = "", panel = FALSE,
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
                    legend.title = element_text(size = 12, face = "bold"),
                    legend.text = element_text(size = 12),
-                   strip.text = element_text(face = "bold"),
+                   strip.text = element_text(size = 14, face = "bold"),
                    axis.title = element_text(face = "bold")) +
     ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 4))) +
     ggplot2::ggtitle(plot_title) +
