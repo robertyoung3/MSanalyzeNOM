@@ -5,8 +5,8 @@
 #' intensities of the detected ions by their percent contribution to total
 #' assigned abundance.
 #'
-#' @param data a tibble containing the following column names: "AvgOSC" (from
-#'   the computeAvgOSC() function), "C", "group_25perc" (from the
+#' @param data a tibble containing the following column names: "NOSC" (from
+#'   the computeNOSC() function), "C", "group_25perc" (from the
 #'   get_25perc_groups() function), and "rel_abund"
 #' @param plot_title a character string containing the sample name
 #' @param panel a logical value specifying whether a panel will be used (default
@@ -33,7 +33,7 @@ plot_Kroll_25perc_groups <- function(data, plot_title = "", panel = FALSE,
   names(blueGreenPalette) <- levels(.data$group_25perc)
 
   #create plot
-  Kroll <- ggplot2::ggplot(data, aes(x = .data$C, y = .data$AvgOSC)) +
+  Kroll <- ggplot2::ggplot(data, aes(x = .data$C, y = .data$NOSC)) +
     ggplot2::geom_point(aes(color = .data$group_25perc), size = 2, na.rm = TRUE, alpha = 0.8) +
     ggplot2::scale_color_manual(name = "Ranked by\n% Abund.", values = blueGreenPalette) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
@@ -44,7 +44,7 @@ plot_Kroll_25perc_groups <- function(data, plot_title = "", panel = FALSE,
                    axis.title = element_text(face = "bold")) +
     ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 4))) +
     ggplot2::ggtitle(plot_title) +
-    ggplot2::labs(x = "C", y = "AvgOSC") +
+    ggplot2::labs(x = "C", y = "NOSC") +
     ggplot2::scale_y_continuous(limits = c(-3, 3), breaks = seq(-3, 3, by = 1)) +
     ggplot2::annotate("text", x = 5, y = 2.5, label = "CO[2] == 4", parse = TRUE,
                       family = "serif", size = 4, hjust = "inward") +

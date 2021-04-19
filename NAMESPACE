@@ -2,7 +2,6 @@
 
 export("%>%")
 export(compute_100norm_rel_abund)
-export(compute_AvgOSC)
 export(compute_DBE)
 export(compute_DBEtoC)
 export(compute_KMD_CH2)

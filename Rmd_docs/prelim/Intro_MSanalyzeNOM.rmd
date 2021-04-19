@@ -140,7 +140,7 @@ The number of double bond equivalents (DBE) is the estimated number of rings and
 >$N_i$ = number of element $i$  
 >$V_i$ = valence of element $i$  
 
-A simpler calculation for several comment elements is:
+A simpler calculation for several common elements is:
 
 >$$DBE = 1 - \frac{a}{2} + \frac{c}{2} + d$$  
 >**where:**  
@@ -204,16 +204,7 @@ DOM_sample$assigned_formulas %>%
   head()
 ```
 
-In the example above, $C_{11}H_{16}O$ is not aromatic under any of the aromaticity measures. Nevertheless, when a search for $C_{11}H_{16}O$ is performed in [ChemSpider](http://www.chemspider.com/Search.aspx?q=C11H16O1), most of the resulting structures *are* aromatic, demonstrating that the aromaticity estimates are not perfect predictors in every case. In fact, FTICR MS does not distinguish between isomers unless chromatography or fragmentation are employed, so the chemical formula $C_{11}H_{16}O$ could represent a mixture of aromatic and non-aromatic structures. 
-
-The sample's aromaticity can be estimated by summing the percent relative abundances of sample components with aromaticity estimates $\ge$ 0.5. Because NMR spectroscopy quantifies functional group content in whole samples, this estimate can be compared to NMR data. 
-
-```{r}
-DOM_sample$assigned_formulas %>%
-  dplyr::filter(ModAI <= 0.5) %>%
-  dplyr::summarize(`num formulas` = dplyr::n(), 
-                   `% abund` = sum(perc_abund))
-```
+In the example above, $C_{11}H_{16}O$ is not aromatic under any of the aromaticity measures. Nevertheless, when a search for $C_{11}H_{16}O$ is performed in [ChemSpider](http://www.chemspider.com/Search.aspx?q=C11H16O1), most of the resulting structures *are* aromatic, demonstrating that the aromaticity estimates represent an average value more than a specific indicator of aromatic functional groups.  
 
 
 #### Useful Elemental Ratios
@@ -335,11 +326,10 @@ Ordinarily, the members of a homologous series with a $-CH_2-$ repeating unit (e
 
 The MSanalyzeNOM package uses the *compute_KMD_CH2()* function to compute Kendrick mass defects (KMD) for measured or theoretical masses where $-CH_2-$ (14.01565u) is the repeating unit. The theoretical Kendrick mass defects will be identical, subject to rounding errors, and the measured Kendrick mass defects will reflect additional measurement errors. The *compute_KMD_CH2()* function produces separate column names for measured and theoretical Kendrick mass defects, and desired index is specified with the "KMDtype" argument (default = "theor"). In addition, the number of digits can be specified to limit or explore rounding errors in the KMD calculation.
 
-Because it is possible for different homologous series to have very similar KMDs, z* values can be used to separate the compounds further by their membership in nominal mass series. For example, the members of a homologous series with a $-CH_2-$ repeating unit differ from each other by a nominal mass of 14u. This means that there are 13 nominal masses between any two members of a $-CH_2-$ homologous series. The *compute_z_CH2()* function produces 14 unique z* values to identify the 14 different nominal mass series that are possible for members of $-CH_2-$ homologous series.
+Because it is possible for different homologous series to have very similar KMDs, z* values can be used to separate the compounds further by their membership in nominal mass series. For example, the members of a homologous series with a $-CH_2-$ repeating unit differ from each other by a nominal mass of 14u. This means that there are 13 nominal masses between any two members of a $-CH_2-$ homologous series. The *compute_KMD_CH2()* function also produces 14 unique z* values to identify the 14 different nominal mass series that are possible for members of $-CH_2-$ homologous series.
 
 ```{r compute_KMD_CH2}
 DOM_sample$assigned_formulas <- DOM_sample$assigned_formulas %>%
-  compute_z_CH2() %>%
   compute_KMD_CH2(KMDtype = "meas", num_digits = 5) %>%
   compute_KMD_CH2(KMDtype = "theor")
 ```
@@ -443,3 +433,66 @@ An R markdown notebook or R programming script should be saved with the "raw" FT
 ## Future Work
 
 Additional functions for FTICR MS data analysis and visualization will continue to be added, and new R markdown notebooks will be created to document their use.
+
+
+## Mass Defect
+
+```{r}
+mass_defect <- DOM_sample$assigned_formulas$theor_MI_mass - round(DOM_sample$assigned_formulas$theor_MI_mass, 
+                                                                  digits = 0)
+
+hist(mass_defect, 
+     breaks = seq(-0.15, 0.5, by = 0.025), 
+     main = "Histogram of SRFA Mass Defect", 
+     xlab = "Mass Defect")
+
+```
+
+
+
+## Side Distribution at Negative and Low Mass Defect
+
+```{r}
+library(tidyverse)
+neg_mass_defect_size <- DOM_sample$assigned_formulas %>%
+  select(theor_MI_mass) %>%
+  mutate(mass_defect = theor_MI_mass - round(theor_MI_mass, digits = 0)) %>%
+  filter(mass_defect <= 0)
+
+hist(neg_mass_defect_size$theor_MI_mass, 
+     breaks = seq(50, 1750, by = 50), 
+     main = "Histogram of SRFA Negative Mass Defect by Size", 
+     xlab = "Monoisotopic Mass",
+     xlim = c(0, 1750)
+)
+```
+
+
+```{r}
+library(tidyverse)
+low_mass_defect_size <- DOM_sample$assigned_formulas %>%
+  select(theor_MI_mass) %>%
+  mutate(mass_defect = theor_MI_mass - round(theor_MI_mass, digits = 0)) %>%
+  filter(mass_defect > 0, mass_defect <= 0.05)
+
+hist(low_mass_defect_size$theor_MI_mass, 
+     breaks = seq(50, 1750, by = 50), 
+     main = "Histogram of SRFA Low Mass Defect (0 to 0.05 Da) by Size", 
+     xlab = "Monoisotopic Mass",
+     xlim = c(0, 1750)
+)
+```
+
+### Testing Max ModAI
+
+After seeing a plot of ModAI with values >> 1, this section finds and extracts the maximum ModAI from the DOM sample for consideration.
+
+```{r}
+max(DOM_sample$new_assigned_formulas$ModAI)
+```
+
+```{r}
+DOM_sample$new_assigned_formulas %>% 
+  filter(ModAI == 1)
+```
+

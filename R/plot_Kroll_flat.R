@@ -5,8 +5,8 @@
 #' about the intensities of the detected ions. The darker areas are where the
 #' highest number of formulas are plotted.
 #'
-#' @param data a tibble containing the following column names: "AvgOSC" (from
-#'   the computeAvgOSC() function) and "C"
+#' @param data a tibble containing the following column names: "NOSC" (from
+#'   the computeNOSC() function) and "C"
 #' @param plot_title a character string containing the sample name
 #' @param panel a logical value specifying whether a panel will be used (default
 #'   = FALSE)
@@ -21,7 +21,7 @@
 #' @export
 plot_Kroll_flat <- function(data, plot_title = "", panel = FALSE,
                             var_panel, num_col = 2) {
-  Kroll <- ggplot2::ggplot(data, aes(x = .data$C, y = .data$AvgOSC)) +
+  Kroll <- ggplot2::ggplot(data, aes(x = .data$C, y = .data$NOSC)) +
     ggplot2::geom_point(size = 1, na.rm = TRUE, alpha = 0.1) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
@@ -30,7 +30,7 @@ plot_Kroll_flat <- function(data, plot_title = "", panel = FALSE,
                    strip.text = element_text(face = "bold"),
                    axis.title = element_text(face = "bold")) +
     ggplot2::ggtitle(plot_title) +
-    ggplot2::labs(x = "C", y = "AvgOSC") +
+    ggplot2::labs(x = "C", y = "NOSC") +
     ggplot2::scale_y_continuous(limits = c(-3, 3), breaks = seq(-3, 3, by = 1)) +
     ggplot2::annotate("text", x = 5, y = 2.5, label = "CO[2] == 4", parse = TRUE,
                       family = "serif", size = 4, hjust = "inward") +

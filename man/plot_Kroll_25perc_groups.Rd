@@ -13,8 +13,8 @@ plot_Kroll_25perc_groups(
 )
 }
 \arguments{
-\item{data}{a tibble containing the following column names: "AvgOSC" (from
-the computeAvgOSC() function), "C", "group_25perc" (from the
+\item{data}{a tibble containing the following column names: "NOSC" (from
+the computeNOSC() function), "C", "group_25perc" (from the
 get_25perc_groups() function), and "rel_abund"}
 
 \item{plot_title}{a character string containing the sample name}

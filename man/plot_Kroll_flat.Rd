@@ -7,8 +7,8 @@
 plot_Kroll_flat(data, plot_title = "", panel = FALSE, var_panel, num_col = 2)
 }
 \arguments{
-\item{data}{a tibble containing the following column names: "AvgOSC" (from
-the computeAvgOSC() function) and "C"}
+\item{data}{a tibble containing the following column names: "NOSC" (from
+the computeNOSC() function) and "C"}
 
 \item{plot_title}{a character string containing the sample name}
 
