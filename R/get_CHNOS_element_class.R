@@ -23,10 +23,10 @@ get_CHNOS_element_class <- function(data) {
         .data$O >= 1 & .data$N == 0 & .data$S == 0 ~ "CHO",
         .data$O >= 1 & .data$N >= 1 & .data$S == 0 ~ "CHNO",
         .data$O >= 1 & .data$N == 0 & .data$S >= 1 ~ "CHOS",
-        .data$O >= 1 & .data$N >= 0 & .data$S >= 0 ~ "CHNOS",
-        .data$O == 0 & .data$N >= 0 & .data$S == 0 ~ "CHN",
-        .data$O == 0 & .data$N == 0 & .data$S >= 0 ~ "CHS",
-        .data$O == 0 & .data$N >= 0 & .data$S >= 0 ~ "CHNS",
+        .data$O >= 1 & .data$N >= 1 & .data$S >= 1 ~ "CHNOS",
+        .data$O == 0 & .data$N >= 1 & .data$S == 0 ~ "CHN",
+        .data$O == 0 & .data$N == 0 & .data$S >= 1 ~ "CHS",
+        .data$O == 0 & .data$N >= 1 & .data$S >= 1 ~ "CHNS",
         TRUE ~ "HC")) %>%
     dplyr::mutate(class_element = factor(.data$class_element)) %>%
     dplyr::mutate(class_element = forcats::fct_reorder(.data$class_element,
