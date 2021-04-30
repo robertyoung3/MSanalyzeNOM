@@ -51,21 +51,20 @@ plot_VK_gradient <- function(data, var = "rel_abund", plot_title = "", panel = F
                                   low = "#F7FCF0", high = "#084081") +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
-                   legend.title = element_text(size = 12, face = "bold"),
+                   legend.title = element_blank(),
                    legend.text = element_text(size = 12),
-                   strip.text = element_text(face = "bold"),
+                   strip.text = element_text(size = 14, face = "bold"),
                    axis.title = element_text(face = "bold")) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "O/C", y = "H/C") +
-    ggplot2::scale_x_continuous(limits = c(0, 1.4), breaks = seq(0.0, 1.2, by = 0.3)) +
+    ggplot2::scale_x_continuous(limits = c(0, 1.5), breaks = seq(0.0, 1.2, by = 0.3)) +
     ggplot2::scale_y_continuous(limits = c(0, 2.5), breaks = seq(0.0, 2.5, by = 0.5)) +
     ggplot2::geom_hline(yintercept = 1.5) +
     ggplot2::geom_abline(intercept = 1.1, slope = -0.44) +
-    # the following two annotations have to be separated to work with faceting
-    ggplot2:: annotate("text", x = 1.3, y = 1.6, label = "ALIPH",
-                       size = 4, vjust = "outward") +
-    ggplot2:: annotate("text", x = 1.3, y = 0.42, label = "AROM",
-                       size = 4, vjust = "outward")
+    ggplot2:: annotate("text", x = 1.4, y = 1.6, label = "MOSTLY\nALIPH",
+                       size = 3.5, vjust = "outward") +
+    ggplot2:: annotate("text", x = 1.4, y = 0.37, label = "MOSTLY\nAROM",
+                       size = 3.5, vjust = "outward")
 
   # implement panel
   if (panel == TRUE) {

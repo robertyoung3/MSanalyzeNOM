@@ -24,15 +24,15 @@ sample_xcel <- system.file("extdata", "This_is_a_PetroOrg_Excel_file.xls",
 
 ## Introduction
 
-This document demonstrates R functions in the **{MSanalyzeNOM}** package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. The MSanalyzeNOM package generally assumes that the detected ions are singly-charged, based on literature describing the ESI-FTICR MS analysis of dissolved NOM (e.g., Stenson et al. 2002). 
+This document demonstrates R functions in the `MSanalyzeNOM` package for analyzing the mass spectrometry (MS) data of natural organic matter (NOM) samples after formula assignment. It was specifically created to analyze MS data from NOM samples analyzed by Fourier transform ion cyclotron resonance (FTICR) MS at the [National High Magnetic Field Laboratory](https://nationalmaglab.org/user-facilities/icr) (MagLab) in Tallahassee, Florida, USA. The MSanalyzeNOM package generally assumes that the detected ions are singly-charged, based on literature describing the ESI-FTICR MS analysis of dissolved NOM (e.g., Stenson et al. 2002). 
 
 
 
 ## Reading MS Data from the MagLab
 
-The MSanalyzeNOM package uses the *get_sample_data()* function to read Excel files exported by PetroOrg&copy;, software that was created at the MagLab for mass calibration, molecular formula assignment, visualization, and other purposes. The Excel file contains sheets with summary data, a sheet with mass spectrometry data for detected ions that could not be assigned molecular formulas ("no hits"), and numerous sheets containing mass spectrometry data for the assigned molecular formulas, which have been separated by heteroatom class (the number and identity of heteroatoms contained in the assigned molecular formulas). For example, $C_{6}H_{10}O_{5}$ and $C_{7}H_{12}O_{5}$ are part of the "O5" heteroatom class, and $C_{11}H_{9}NO_{6}S$ is part of the "N1 O6 S1" heteroatom class.
+The MSanalyzeNOM package uses the `get_sample_data()` function to read Excel files exported by PetroOrg&copy;, software that was created at the MagLab for mass calibration, molecular formula assignment, visualization, and other purposes. The Excel file contains sheets with summary data, a sheet with mass spectrometry data for detected ions that could not be assigned molecular formulas ("no hits"), and numerous sheets containing mass spectrometry data for the assigned molecular formulas, which have been separated by heteroatom class (the number and identity of heteroatoms contained in the assigned molecular formulas). For example, $C_{6}H_{10}O_{5}$ and $C_{7}H_{12}O_{5}$ are part of the "O5" heteroatom class, and $C_{11}H_{9}NO_{6}S$ is part of the "N1 O6 S1" heteroatom class.
 
-The *get_sample_data()* function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to the "no hits". To facilitate the plotting of mass spectra, it combines the detected m/z's and relative abundances from the "no hits" and assigned formulas into a list element named "all_detected_ions".
+The `get_sample_data()` function returns a named list containing file and sample information, selected mass spectrometry parameters, mass spectrometry data related to the assigned molecular formulas, and mass spectrometry data related to the "no hits". To facilitate the plotting of mass spectra, it combines the detected m/z's and relative abundances from the "no hits" and assigned formulas into a list element named "all_detected_ions". Finally, the `get_sample_data()` function computes various values like the nominal (i.e., average) carbon oxidation state (NOSC) useful for exploring and visualizing the composition of the NOM sample.
 
 ```{r run get_sample_data, message=FALSE}
 # sample_xcel contains the path and filename of a sample Excel file for a DOM sample. if no path and filename are given, 
@@ -266,6 +266,7 @@ plot_VK_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund",
 ```
 
 
+
 #### Grouped by %Contribution to Abundance
 
 Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, the assigned formulas can be ordered by their percent relative abundances, and grouped by whether they comprise the top 25%", "second 25%", "third 25%", or "bottom 25%" of the sample's total percent abundance. Because there are only four levels, and the high abundance laboratory contaminants are usually grouped with abundant NOM components, the distribution of NOM components is better resolved. The `plot_VK_25perc_groups()` function creates a van Krevelen diagram that is colored on this basis.
@@ -303,7 +304,7 @@ Because it is possible for different homologous series to have very similar KMDs
 
 By default, the `get_sample_data()` function computes the theoretical KMD and z* value for each formula where $-CH_2-$ (14.01565u) is the repeating unit. 
 
-As an example, the linear alkylbenzyl sulfonate (LAS) surfactants have a $-CH_2-$ repeating unit, and a theoretical Kendrick mass defect equal to 0.1788, but the N4 O3 heteroatom class also contains a $-CH_2-$ homologous series with a theoretical Kendrick mass defect equal to 0.1788, when rounding is taken into account. Because they are members of different 14u nominal mass series, the LAS surfactants can be separated from the N4 O3 heteroatom class by their Z* values.
+As an example, the linear alkylbenzyl sulfonate (LAS) surfactants have a $-CH_2-$ repeating unit, and a theoretical Kendrick mass defect equal to 0.1788, but the N4 O3 heteroatom class also contains a $-CH_2-$ homologous series with a theoretical Kendrick mass defect equal to 0.1788, when rounding is taken into account. Because they are members of different 14u nominal mass series, the LAS surfactants can be separated from the N4 O3 heteroatom class by their z* values.
 
 ```{r KMD LAS}
 DOM_sample$assigned_formulas %>%
@@ -355,6 +356,7 @@ In the MSanalyzeNOM` package, functions similar to those for van Krevelen diagra
 plot_Kroll_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund", 
                     plot_title = DOM_sample$sample_name)
 ```
+
 
 Similarly, each `plot_Kroll` function can separate the assigned formulas by elemental class using the *panel* and *var_panel* arguments.
 

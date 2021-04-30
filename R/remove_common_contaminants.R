@@ -8,7 +8,7 @@
 #' number due to the presence of high abundance contaminants.
 #'
 #' @param df a tibble containing the following column names: "chem_formula",
-#'   "class_hetero", "KMD_CH2_theor" (from the compute_KMD_CH2() function),
+#'   "class_hetero", "KMD_CH2" (from the compute_KMD_CH2() function),
 #'   "z_CH2" (from the compute_z_CH2() function), and "rel_abund"
 #'
 #' @importFrom rlang .data
@@ -20,9 +20,10 @@ remove_common_contaminants <- function(df) {
     #remove stearic and palmitic acid
     dplyr::filter(!.data$chem_formula %in% c("C18H36O2", "C16H32O2")) %>%
     # remove LAS surfactants
-    dplyr::filter(!(.data$class_hetero == "O3 S1" & .data$KMD_CH2_theor == "0.1788"
+    dplyr::filter(!(.data$class_hetero == "O3 S1" & .data$KMD_CH2 == "0.1788"
                     & .data$z_CH2 == "-11")) %>%
     # normalize rel_abund to new highest value & perc_abund
     dplyr::mutate(rel_abund = .data$rel_abund / max(.data$rel_abund) * 100,
-                  perc_abund = .data$rel_abund/ sum(.data$rel_abund) * 100)
+                  perc_abund = .data$rel_abund/ sum(.data$rel_abund) * 100) %>%
+    get_25perc_groups()
 }

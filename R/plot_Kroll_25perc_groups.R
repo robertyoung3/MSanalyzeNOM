@@ -38,18 +38,14 @@ plot_Kroll_25perc_groups <- function(data, plot_title = "", panel = FALSE,
     ggplot2::scale_color_manual(name = "Ranked by\n% Abund.", values = blueGreenPalette) +
     ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
     ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
-                   legend.title = element_text(size = 12, face = "bold"),
+                   legend.title = element_blank(),
                    legend.text = element_text(size = 12),
-                   strip.text = element_text(face = "bold"),
+                   strip.text = element_text(size = 14, face = "bold"),
                    axis.title = element_text(face = "bold")) +
     ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(size = 4))) +
     ggplot2::ggtitle(plot_title) +
     ggplot2::labs(x = "C", y = "NOSC") +
-    ggplot2::scale_y_continuous(limits = c(-3, 3), breaks = seq(-3, 3, by = 1)) +
-    ggplot2::annotate("text", x = 5, y = 2.5, label = "CO[2] == 4", parse = TRUE,
-                      family = "serif", size = 4, hjust = "inward") +
-    ggplot2::annotate("text", x = 5, y = -2.5, label = "CH[4] == -4", parse = TRUE,
-                      family = "serif", size = 4, hjust = "inward")
+    ggplot2::scale_y_continuous(limits = c(-2.5, 2.5), breaks = seq(-2, 2, by = 1))
 
   # implement panel
   if (panel == TRUE) {

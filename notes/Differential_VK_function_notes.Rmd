@@ -1,0 +1,63 @@
+---
+title: "Create Differential VK Analysis Function"
+output: html_notebook
+---
+
+Building a function out of old code.  After thinking about it, there should be at least 3 separate functions: one for joining two datasets, one for plotting a differential VK, and one for plotting a differential Kroll diagram. The joined dataset will then be available for separate analysis.
+
+
+The following command extracts the sample names.
+
+```{r}
+# col_names <- colnames(DOM_sample_1$assigned_formulas)
+# excl_col_names <- c("mz", "ppm_error", "rel_abund", "perc_abund", "group_25perc")
+#common_col_names <- col_names[!col_names %in% excl_col_names]
+
+# these names are fixed for all samples
+# column names must include "rel_abund" and "perc_abund"
+common_col_names <- c("class_element", "class_hetero", "chem_formula", "theor_MI_mass",
+                      "theor_mz", "DBE", "C", "H", "N", "O", "S", "DBEtoC", "ModAI",
+                      "HtoC", "OtoC", "NtoC", "KMD_CH2", "z_CH2", "NOSC", "mass_defect")
+
+temp <- DOM_sample_1$new_assigned_formulas %>% 
+  full_join(DOM_sample_4$new_assigned_formulas, 
+            by = common_col_names) %>%
+  mutate(rel_abund.x = replace_na(rel_abund.x, 0),
+         rel_abund.y = replace_na(rel_abund.y, 0),
+         rel_abund_y_minus_x = rel_abund.y - rel_abund.x)
+```
+
+```{r}
+temp <- temp %>%
+    arrange(abs(rel_abund_y_minus_x))
+```
+
+
+```{r, fig.height=4, fig.width=5.5}
+# black to orange appears to be color-bind friendly
+# https://bconnelly.net/posts/creating_colorblind-friendly_figures/
+ggplot(temp, aes(x = OtoC, HtoC)) +
+    geom_point(aes(color = rel_abund_y_minus_x), size = 2, na.rm = TRUE, alpha = 0.6) +
+    ggplot2::scale_color_gradient2(name = "\u0394 rel abund",
+                                  low = "orange", mid = "white", high = "black") +
+    ggthemes::theme_tufte(base_size = 14, base_family = "sans") +
+    ggplot2::theme(plot.title = element_text(size = 16, face = "bold"),
+                   legend.title = element_text(size = 12),
+                   legend.text = element_text(size = 12),
+                   strip.text = element_text(size = 14, face = "bold"),
+                   axis.title = element_text(face = "bold")) +
+    ggplot2::ggtitle("DOM 4 minus DOM 1") +
+    ggplot2::labs(x = "O/C", y = "H/C") +
+    ggplot2::scale_x_continuous(limits = c(0, 1.5), breaks = seq(0.0, 1.2, by = 0.3)) +
+    ggplot2::scale_y_continuous(limits = c(0, 2.5), breaks = seq(0.0, 2.5, by = 0.5)) +
+    ggplot2::geom_hline(yintercept = 1.5) +
+    ggplot2::geom_abline(intercept = 1.1, slope = -0.44) +
+    ggplot2:: annotate("text", x = 1.4, y = 1.6, label = "MOSTLY\nALIPH",
+                       size = 3.5, vjust = "outward") +
+    ggplot2:: annotate("text", x = 1.4, y = 0.37, label = "MOSTLY\nAROM",
+                       size = 3.5, vjust = "outward")
+
+```
+
+
+
