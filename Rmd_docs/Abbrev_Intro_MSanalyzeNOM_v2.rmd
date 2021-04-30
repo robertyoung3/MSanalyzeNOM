@@ -1,0 +1,340 @@
+---
+title: "Introduction to MSanalyzeNOM"
+author: "Robert B. Young"
+date: "4/27/2021"
+output:
+  html_notebook: default
+---
+
+
+### Purpose
+
+The purpose of this document is to demonstrate a simple workflow for analyzing FTICR MS data from two dissolved organic matter (DOM) samples.
+
+
+### Preliminaries
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+options(digits = 8)
+```
+
+```{r}
+library(MSanalyzeNOM)
+library(tidyverse)
+```
+
+
+### Get Sample Data
+
+The `get_sample_data()` function reads the Excel workbooks exported by PetroOrg, and computes various useful values like the nominal (i.e., average) carbon oxidation state (NOSC). It returns a list for each sample containing the sample name, assigned formulas, "no hits" and other useful information.
+
+```{r}
+# if no filepath is specified, opens file explorer
+DOM_sample_1 <- get_sample_data()
+DOM_sample_1$sample_name <- "DOM 1"
+```
+
+
+The `View()` command can be used to display any "spreadsheet" contained in the list, and the resulting table is sortable. 
+
+```{r}
+# use View command to display list components
+View(DOM_sample_1$assigned_formulas)
+```
+
+
+```{r}
+DOM_sample_4 <- get_sample_data()
+DOM_sample_4$sample_name <- "DOM 4"
+```
+
+
+The following section combines both samples into one "spreadsheet" for use in exploring or plotting them together. Because it is not contained in a list, it can be displayed as a sortable table with a click.
+
+```{r}
+combined_DOM_formulas <- bind_rows("DOM 1" = DOM_sample_1$assigned_formulas,
+                                   "DOM 4" = DOM_sample_4$assigned_formulas,
+                                   .id = "sample_name") %>% 
+  reorder_class_hetero()  # ensures consistent order for bar plots containing multiple samples
+```
+
+
+
+### Mass Spectra
+
+The `plot_mass_spectrum()` command plots a mass spectrum with centroided values for all detected m/z, including assigned formulas and "no hits", based on their relative abundances (max = 100).
+
+Type "?plot_mass_spectrum" for more details (e.g., how to specify an mz range).
+
+```{r}
+plot_mass_spectrum(DOM_sample_1$all_detected_ions, 
+                   plot_title = DOM_sample_1$sample_name)
+```
+
+
+```{r}
+plot_mass_spectrum(DOM_sample_4$all_detected_ions, 
+                   plot_title = DOM_sample_4$sample_name)
+```
+
+The three really abundant peaks can be examined with a sortable table, as described above, or displayed with a few simple `tidy` commands. Note that the top 3 formulas are SO3 containing formulas from the same CH2 homologous series (with identical Kendrick mass defects and z values). 
+
+```{r}
+#compare to DOM_sample_1
+DOM_sample_4$assigned_formulas %>% 
+  select(class_hetero, chem_formula, mz, rel_abund, HtoC, ModAI, KMD_CH2, z_CH2) %>%
+  arrange(desc(rel_abund)) %>%
+  head()
+```
+
+
+The following is an image of C18H28SO3, a common linear alkylbenzene sulfonate (LAS) surfactant found in detergents. They are not extensively branched, but dicarboxylic acids often form during biodegradation, suggesting at least one branch. 
+
+Is it aromatic or aliphatic? Technically, both, but there are twice as many aliphatic C (12) as aromatic C (6). As a result, it's H/C ratio is > 1.5.
+
+![C18H30O3S1](P:/pCloud_Storage/R_projects/MSanalyzeNOM/new_data/C18_LAS.png)
+
+
+### van Krevelen Diagrams
+
+Using a van Krevelen diagram, which compares the H/C and O/C ratios of all assigned formulas, it's easy to see where the LAS plot appear relative to other assigned formulas.
+
+```{r, fig.height=4, fig.width=6}
+plot_VK_25perc_groups(DOM_sample_4$assigned_formulas, 
+                      plot_title = DOM_sample_4$sample_name)
+```
+
+The diagonal line in the van Krevelen diagram is derived from the modified aromaticity index, which essentially determines the density of double bonds in each assigned formula, and estimates the degree of aromaticity after assuming that 50% of the O atoms will form double bonds (e.g. carbonyl and carboxyl groups). According to NMR, these groups are common in DOM.
+
+```{r, fig.height=3.5, fig.width=4}
+DOM_sample_4$assigned_formulas %>%
+  dplyr::filter(ModAI == 0.5) %>%
+  plot_VK_flat(plot_title = DOM_sample_4$sample_name)
+```
+
+
+The same plot command can be used to separate the assigned formulas by elemental class using the `panel` and `var_panel` arguments.
+
+```{r, fig.height=6.5, fig.width=8}
+plot_VK_25perc_groups(DOM_sample_1$assigned_formulas, plot_title = DOM_sample_1$sample_name, 
+                      panel = TRUE, var_panel = "class_element")
+```
+
+In addition, the same plot command can be used with the combined "spreadsheet" to plot both samples side-by-side.  Note that the LAS compounds are also prominent in the DOM 1 sample, even though they didn't clearly stand out.
+
+```{r, fig.height=4, fig.width=8}
+plot_VK_25perc_groups(combined_DOM_formulas, plot_title = "", 
+                      panel = TRUE, var_panel = "sample_name")
+```
+
+
+### Remove Common Contaminants
+
+A simple command will remove common contaminants (e.g., LAS) from the analysis. The result can be saved as a new spreadsheet in the sample list to preserve the original data.
+
+```{r}
+# review common contaminants
+DOM_sample_4$new_assigned_formulas <- DOM_sample_4$assigned_formulas %>% 
+  remove_common_contaminants()
+```
+
+Now, the LAS are gone from each sample, and all relative and percent abundances have been recomputed.
+
+```{r}
+DOM_sample_4$new_assigned_formulas %>% 
+  dplyr::select(class_hetero, chem_formula, mz, ppm_error, rel_abund, KMD_CH2, z_CH2) %>%
+  dplyr::arrange(dplyr::desc(rel_abund)) %>%
+  head()
+```
+
+After the common contaminants are removed from both samples, they can be replotted side-by-side.
+
+```{r}
+DOM_sample_1$new_assigned_formulas <- DOM_sample_1$assigned_formulas %>% 
+  remove_common_contaminants()
+
+combined_DOM_formulas_new <- bind_rows("DOM 1" = DOM_sample_1$new_assigned_formulas,
+                                       "DOM 4" = DOM_sample_4$new_assigned_formulas,
+                                       .id = "sample_name") %>% 
+  reorder_class_hetero()
+```
+
+
+```{r, fig.height=4, fig.width=8}
+plot_VK_25perc_groups(combined_DOM_formulas_new, plot_title = "", 
+                      panel = TRUE, var_panel = "sample_name")
+```
+
+
+### Plotting NOSC Values
+
+Similar plotting commands are also available for Kroll diagrams, which plot NOSC as a function of C number.  NOSC values are highly correlated with the O/C ratios in van Krevelen diagrams, but Kroll diagrams also offer a size dimension in the form of the C number.
+
+```{r, fig.height=4, fig.width=8}
+plot_Kroll_25perc_groups(combined_DOM_formulas_new, plot_title = "", panel = TRUE,
+                         var_panel = "sample_name")
+```
+
+
+### Further Exploring the NOM Data
+
+#### Elemental Class Distribution
+
+A few simple `tidy` commands can be used to display summary details about the different elemental classes. The CHNO class is definitely more abundant in sample 4.
+
+```{r}
+DOM_sample_1$new_assigned_formulas %>%  
+  group_by(class_element) %>%
+  summarize(`num formulas` = n(), 
+            `% abund` = sum(perc_abund))
+```
+
+```{r}
+DOM_sample_4$new_assigned_formulas %>%  
+  group_by(class_element) %>%
+  summarize(`num formulas` = n(), 
+            `% abund` = sum(perc_abund))
+```
+
+The CHNO classes in the respective samples can be visualized by separating the elemental classes when plotting each sample. The increased abundances in the DOM 4 sample are clearly evident in the van Krevelen diagram.  
+
+```{r, fig.height=6.5, fig.width=8.5}
+plot_VK_25perc_groups(DOM_sample_1$new_assigned_formulas, plot_title = DOM_sample_1$sample_name, 
+                      panel = TRUE, var_panel = "class_element")
+```
+
+
+```{r, fig.height=6.5, fig.width=8.5}
+plot_VK_25perc_groups(DOM_sample_4$new_assigned_formulas, plot_title = DOM_sample_1$sample_name, 
+                      panel = TRUE, var_panel = "class_element")
+```
+
+Using a few more `tidy` commands, it is also possible plot the CHNO components of the two samples side-by-side, and recompute the CHNO formulas' relative abundances to increase resolution. Here, it is clear that the CHNO compounds in the "Mostly Aromatic" region have expanded.
+
+```{r, fig.height=4, fig.width=8.5}
+combined_DOM_formulas_new %>% 
+  filter(N > 0, S == 0) %>% 
+  compute_perc_abund() %>%    # recomputes perc_abund for filtered data only
+  get_25perc_groups() %>%     # creates new 25perc_groups for filtered data only
+  plot_VK_25perc_groups(plot_title = "CHNO", 
+                        panel = TRUE, var_panel = "sample_name")
+```
+
+The same commands can be used with the Kroll plotting functions. Here, it is also clear that the lower molecular weight (lower C number) CHNO formulas are increasing.
+
+```{r, fig.height=4, fig.width=7.5}
+combined_DOM_formulas_new %>% 
+  filter(N > 0, S == 0) %>% 
+  compute_perc_abund() %>%    # recomputes perc_abund for filtered data only
+  get_25perc_groups() %>%     # creates new 25perc_groups for filtered data only
+  plot_Kroll_25perc_groups(plot_title = "CHNO", 
+                           panel = TRUE, var_panel = "sample_name")
+```
+
+
+#### Bar Charts
+
+Bar charts can also be used to examine shifts in CHNO content. There is a plot command for single samples. Because there are so many heteroatom classes, it is beneficial to focus on a subset of the classes, which can be accomplished with a few commands.
+
+```{r}
+DOM_sample_1$new_assigned_formulas %>% 
+  filter(N >= 0, N < 4, S == 0) %>% 
+  compute_perc_abund() %>%    # recomputes perc_abund for filtered data only
+  group_by(class_hetero) %>% 
+  summarize(perc_abund = sum(perc_abund)) %>% 
+  plot_hetero_class_single()
+```
+
+In addition, there is a separate command for multiple samples. There is a shift to smaller O numbers and larger N numbers, together with the shift to smaller C numbers. 
+
+```{r}
+# easier to see by exporting and resizing the image
+combined_DOM_formulas_new %>% 
+  filter(N > 0, N < 4, S == 0) %>% 
+  group_by(sample_name) %>%
+  compute_perc_abund() %>%    # recomputes perc_abund for filtered data by sample
+  group_by(sample_name, class_hetero) %>%    
+  summarize(perc_abund = sum(perc_abund)) %>%    # summary data by hetero_class and sample
+  plot_hetero_class_multiple()
+```
+
+
+Using similar `tidy` commands, it is possible to see the change in N > 1 formulas from DOM 1 to DOM 4.
+
+```{r}
+combined_DOM_formulas_new %>% 
+  filter(N > 0, N < 4, S == 0) %>% 
+  group_by(sample_name) %>%
+  compute_perc_abund() %>%    # recomputes perc_abund for filtered data by sample
+  group_by(sample_name, N) %>%    
+  summarize(perc_abund = sum(perc_abund)) %>%    # summary data by N number and sample
+  arrange(N)
+```
+
+
+### Differential van Krevelen Diagram
+
+```{r}
+# the first sample is subtracted from the second
+# values > 0 are greater rel abund in sample 2
+# values < 0 are greater rel abund in sample 1
+comparison_DOM_formulas <- compute_2sample_peak_differences(combined_DOM_formulas_new)
+```
+
+
+```{r, fig.height=4, fig.width=5.5}
+plot_VK_differential(comparison_DOM_formulas, 
+                     plot_title = "DOM 4 minus DOM 1")
+```
+
+
+### CHNO Only
+
+```{r, fig.height=4, fig.width=5.5}
+combined_DOM_formulas_new %>% 
+  filter(N > 0, N < 4, S == 0) %>% 
+  group_by(sample_name) %>%
+  compute_100norm_rel_abund() %>%    # recomputes rel_abund for filtered data by sample
+  compute_2sample_peak_differences %>% 
+  plot_VK_differential(plot_title = "CHNO - DOM 4 minus DOM 1")
+```
+
+
+```{r}
+temp <- combined_DOM_formulas_new %>% 
+  filter(N > 0, N < 4, S == 0) %>% 
+  group_by(sample_name) %>%
+  compute_100norm_rel_abund() %>%    # recomputes rel_abund for filtered data by sample
+  compute_2sample_peak_differences 
+```
+
+
+```{r, fig.height=4, fig.width=5.5}
+combined_DOM_formulas_new %>% 
+  filter(N > 0, N < 4, S == 0) %>% 
+  group_by(sample_name) %>%
+  compute_100norm_rel_abund() %>%    # recomputes rel_abund for filtered data by sample
+  compute_2sample_peak_differences %>% 
+  plot_Kroll_differential(plot_title = "CHNO - DOM 4 minus DOM 1")
+```
+
+
+
+### Alternative Plots
+
+The van Krevelen and Kroll diagrams are also available as gradients.
+
+```{r, fig.height=4, fig.width=5.5}
+plot_VK_gradient(DOM_sample_4$new_assigned_formulas, 
+                 plot_title = DOM_sample_4$sample_name)
+```
+
+
+
+```{r, fig.height=4, fig.width=5.5}
+plot_Kroll_gradient(DOM_sample_4$new_assigned_formulas, 
+                    plot_title = DOM_sample_4$sample_name)
+```
+
+

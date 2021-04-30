@@ -63,25 +63,25 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
                   rel_abund = .data$rel_abundance,
                   DBE = .data$dbe)
 
-  #### (e) convert class_hetero from characters to factors
-  temp$class_hetero <- factor(temp$class_hetero)
-
-  #### (f) rename element columns with first element in prior column
+  #### (e) rename element columns with first element in prior column
   for (i in elements_used) {
     colnames(temp)[which(temp[1,] == i) + 1] <- i
   }
 
-  #### (g) discard unnamed columns (e.g., "x10")
+  #### (f) discard unnamed columns (e.g., "x10")
   temp <- temp %>%
     dplyr::select(-tidyselect::matches("x[[:digit:]]+"))
 
-  #### (h) generate molecular formulas & strip empty elements
+  #### (g) generate molecular formulas & strip empty elements
   temp$chem_formula <- ""
   for (i in elements_used) {
     temp$chem_formula <- temp$chem_formula %>%
       stringr::str_c(i, temp[[i]]) %>%
       stringr::str_replace(stringr::str_c(i, "0"), "")
   }
+
+  #### (h) convert class_hetero from characters to factors
+  temp <- reorder_class_hetero(temp)
 
   #### (i) compute neutral mass
   ## PosESI (with adducts) and APPI (with radicals) are reserved
@@ -130,7 +130,7 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
 
   #### (s) compute KMD_CH2 and z_CH2
   temp <- temp %>%
-    compute_KMD_CH2(KMDtype = "theor")
+    compute_KMD_CH2()
 
   #### (t) compute NOSC
   temp <- temp %>%
@@ -140,7 +140,11 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
   temp <- temp %>%
     compute_mass_defect()
 
-  #### (v) assign temp to sample_data
+  #### (v) order formulas by theor_MI_mass
+  temp <- temp %>%
+    dplyr::arrange(.data$theor_MI_mass)
+
+  #### (w) assign temp to sample_data
   sample_data$assigned_formulas <- temp
 
 

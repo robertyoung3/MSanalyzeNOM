@@ -266,6 +266,7 @@ plot_VK_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund",
 ```
 
 
+
 #### Grouped by %Contribution to Abundance
 
 Another alternative for increasing resolution is to group assigned formulas by their percent contribution to total assigned abundance, and then plot the grouped formulas in a van Krevelen diagram. For example, the assigned formulas can be ordered by their percent relative abundances, and grouped by whether they comprise the top 25%", "second 25%", "third 25%", or "bottom 25%" of the sample's total percent abundance. Because there are only four levels, and the high abundance laboratory contaminants are usually grouped with abundant NOM components, the distribution of NOM components is better resolved. The `plot_VK_25perc_groups()` function creates a van Krevelen diagram that is colored on this basis.
@@ -355,6 +356,7 @@ In the MSanalyzeNOM` package, functions similar to those for van Krevelen diagra
 plot_Kroll_gradient(DOM_sample$new_assigned_formulas, var = "rel_abund", 
                     plot_title = DOM_sample$sample_name)
 ```
+
 
 Similarly, each `plot_Kroll` function can separate the assigned formulas by elemental class using the *panel* and *var_panel* arguments.
 

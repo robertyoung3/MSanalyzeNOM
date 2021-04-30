@@ -8,7 +8,7 @@ remove_common_contaminants(df)
 }
 \arguments{
 \item{df}{a tibble containing the following column names: "chem_formula",
-"class_hetero", "KMD_CH2_theor" (from the compute_KMD_CH2() function),
+"class_hetero", "KMD_CH2" (from the compute_KMD_CH2() function),
 "z_CH2" (from the compute_z_CH2() function), and "rel_abund"}
 }
 \value{
