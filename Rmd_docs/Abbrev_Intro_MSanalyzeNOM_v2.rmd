@@ -15,11 +15,12 @@ The purpose of this document is to demonstrate a simple workflow for analyzing F
 ### Preliminaries
 
 ```{r, include=FALSE}
+# the global options don't seem to apply to all code chunks: https://community.rstudio.com/t/how-to-eliminate-library-warnings-and-messages-using-knitr/42071/4
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 options(digits = 8)
 ```
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 library(MSanalyzeNOM)
 library(tidyverse)
 ```
@@ -29,7 +30,7 @@ library(tidyverse)
 
 The `get_sample_data()` function reads the Excel workbooks exported by PetroOrg, and computes various useful values like the nominal (i.e., average) carbon oxidation state (NOSC). It returns a list for each sample containing the sample name, assigned formulas, "no hits" and other useful information.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # if no filepath is specified, opens file explorer
 DOM_sample_1 <- get_sample_data()
 DOM_sample_1$sample_name <- "DOM 1"
@@ -44,7 +45,7 @@ View(DOM_sample_1$assigned_formulas)
 ```
 
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 DOM_sample_4 <- get_sample_data()
 DOM_sample_4$sample_name <- "DOM 4"
 ```
@@ -167,7 +168,7 @@ plot_VK_25perc_groups(combined_DOM_formulas_new, plot_title = "",
 ```
 
 
-### Plotting NOSC Values
+### Kroll Diagrams
 
 Similar plotting commands are also available for Kroll diagrams, which plot NOSC as a function of C number.  NOSC values are highly correlated with the O/C ratios in van Krevelen diagrams, but Kroll diagrams also offer a size dimension in the form of the C number.
 
@@ -210,7 +211,7 @@ plot_VK_25perc_groups(DOM_sample_4$new_assigned_formulas, plot_title = DOM_sampl
                       panel = TRUE, var_panel = "class_element")
 ```
 
-Using a few more `tidy` commands, it is also possible plot the CHNO components of the two samples side-by-side, and recompute the CHNO formulas' relative abundances to increase resolution. Here, it is clear that the CHNO compounds in the "Mostly Aromatic" region have expanded.
+Using a few more `tidy` commands, it is also possible plot the CHNO components of the two samples side-by-side, while recomputing the CHNO formulas' relative abundances to increase resolution. Here, it is clear that the CHNO compounds in the "Mostly Aromatic" region have expanded.
 
 ```{r, fig.height=4, fig.width=8.5}
 combined_DOM_formulas_new %>% 
@@ -246,7 +247,7 @@ DOM_sample_1$new_assigned_formulas %>%
   plot_hetero_class_single()
 ```
 
-In addition, there is a separate command for multiple samples. There is a shift to smaller O numbers and larger N numbers, together with the shift to smaller C numbers. 
+In addition, there is a separate command for comparing multiple samples side-by_side. Comparing the CHNO formulas from DOM 1 and DOM 4, it becomes apparent that there is a shift to smaller O numbers and larger N numbers, together with the shift to smaller C numbers. 
 
 ```{r}
 # easier to see by exporting and resizing the image
@@ -260,7 +261,7 @@ combined_DOM_formulas_new %>%
 ```
 
 
-Using similar `tidy` commands, it is possible to see the change in N > 1 formulas from DOM 1 to DOM 4.
+Using similar `tidy` commands, it is also possible to see the percentage change in N > 1 formulas from DOM 1 to DOM 4.
 
 ```{r}
 combined_DOM_formulas_new %>% 
@@ -273,7 +274,15 @@ combined_DOM_formulas_new %>%
 ```
 
 
-### Differential van Krevelen Diagram
+### Differential Analysis of Two Samples
+
+When it's desirable to contrast two samples from different experimental treatments or environmental conditions, a differential analysis can be performed to determine which formulas have increased in abundance, and which formulas have decreased in abundance, from one sample to the other.
+
+#### Performing the Differential Analysis
+
+The `compute_2sample_peak_differences()` function performs this analysis by subtracting the "sample 1" from "sample 2", such that positive values reflect greater abundances in sample 2, and negative values reflect greater abundances in sample 1. The function takes a dataframe containing the combined samples, with their names specified in a `sample_name` column. If the combined dataframe contains more than two samples, integer values can be used to specify the locations of the respective samples in a list of the sample names. The function also prints a message to confirm which samples are being compared.
+
+Finally, the `compute_2sample_peak_differences()` function returns a new dataframe containing the joined formulas so that the differences can be visualized or examined in greater detail.
 
 ```{r}
 # the first sample is subtracted from the second
@@ -283,13 +292,19 @@ comparison_DOM_formulas <- compute_2sample_peak_differences(combined_DOM_formula
 ```
 
 
+### Differential Plots
+
+After the two-sample comparison has been perfomred, differential van Krevelen and Kroll diagrams can be created.
+
 ```{r, fig.height=4, fig.width=5.5}
 plot_VK_differential(comparison_DOM_formulas, 
                      plot_title = "DOM 4 minus DOM 1")
 ```
 
 
-### CHNO Only
+#### Differential Plots - CHNO Only
+
+Using a few more `tidy` commands, it is also possible plot only the CHNO components of the two samples. Here, it is clear that the CHNO compounds in the "Mostly Aromatic" region have increased in abundance.
 
 ```{r, fig.height=4, fig.width=5.5}
 combined_DOM_formulas_new %>% 
@@ -301,14 +316,7 @@ combined_DOM_formulas_new %>%
 ```
 
 
-```{r}
-temp <- combined_DOM_formulas_new %>% 
-  filter(N > 0, N < 4, S == 0) %>% 
-  group_by(sample_name) %>%
-  compute_100norm_rel_abund() %>%    # recomputes rel_abund for filtered data by sample
-  compute_2sample_peak_differences 
-```
-
+The same approach can be used to plot a differential Kroll diagram, where it is clear that smaller, more oxidized CHNO formulas (e.g. more aromatic) are more abundant.
 
 ```{r, fig.height=4, fig.width=5.5}
 combined_DOM_formulas_new %>% 
@@ -317,24 +325,6 @@ combined_DOM_formulas_new %>%
   compute_100norm_rel_abund() %>%    # recomputes rel_abund for filtered data by sample
   compute_2sample_peak_differences %>% 
   plot_Kroll_differential(plot_title = "CHNO - DOM 4 minus DOM 1")
-```
-
-
-
-### Alternative Plots
-
-The van Krevelen and Kroll diagrams are also available as gradients.
-
-```{r, fig.height=4, fig.width=5.5}
-plot_VK_gradient(DOM_sample_4$new_assigned_formulas, 
-                 plot_title = DOM_sample_4$sample_name)
-```
-
-
-
-```{r, fig.height=4, fig.width=5.5}
-plot_Kroll_gradient(DOM_sample_4$new_assigned_formulas, 
-                    plot_title = DOM_sample_4$sample_name)
 ```
 
 

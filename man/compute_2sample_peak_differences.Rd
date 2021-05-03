@@ -4,20 +4,28 @@
 \alias{compute_2sample_peak_differences}
 \title{compute_2sample_peak_differences}
 \usage{
-compute_2sample_peak_differences(combined_samples)
+compute_2sample_peak_differences(combined_samples, pos_1 = 1, pos_2 = 2)
 }
 \arguments{
 \item{combined_samples}{a dataframe containing assigned formulas from
 get_sample_data() for two different samples}
+
+\item{pos_1}{an integer value indicating the order of sample 1 in the combined
+sample dataframe}
+
+\item{pos_2}{an integer value indicating the order of sample 2 in the combined
+sample dataframe}
 }
 \value{
 a dataframe containing the joined formulas and the differences in their
 relative abundances
 }
 \description{
-This function takes two dataframes containing assigned formulas, and returns
-a dataframe containing the joined formulas, with relative abundance = 0 when
-an assigned formula was not present in one of the samples.
+This function takes a dataframe containing the assigned formulas from at least
+two NOM damples, and integer values representing the order of the two samples
+that will be compared differentially, and returns a dataframe containing the
+joined formulas, with relative abundance = 0 when an assigned formula is not
+present in one of the samples.
 }
 \details{
 The dataframe also returns a column containing the differential relative
