@@ -1,0 +1,34 @@
+---
+title: "References - Package Development and Maintenance"
+author: "Robert B. Young"
+date: "5/25/2021"
+output:
+  html_notebook: default
+---
+
+## Purpose
+
+This notebook provides links to useful references for help in developing and maintaining this package.
+
+
+## Links
+
+#### Github
+
+* [Happy Git and GitHub for the useR](https://happygitwithr.com/)
+* [Getting Started](https://docs.github.com/en/github/getting-started-with-github/quickstart)
+* [The Ultimate Github Collaboration Guide](https://medium.com/@jonathanmines/the-ultimate-github-collaboration-guide-df816e98fb67)
+
+
+#### R Code
+
+* [R Packages](https://r-pkgs.org/)
+* [Programming with dplyr](https://dplyr.tidyverse.org/articles/programming.html)
+* [Programming with ggplot2](https://rpubs.com/hadley/97970)
+
+
+#### Other References
+
+* [R for Data Science](https://r4ds.had.co.nz/)
+* [Advanced R](https://adv-r.hadley.nz/)
+* [What They Forgot to Teach You About R](https://rstats.wtf/index.html) - projects and the `here` package

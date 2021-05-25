@@ -87,70 +87,77 @@ get_sample_data <- function(file = file.choose(), ion_technique = "NegESI",
   ## PosESI (with adducts) and APPI (with radicals) are reserved
   mass_proton <- 1.00727647
   if (sample_data$ion_technique == "NegESI") {
-    temp$theor_MI_mass <- temp$theor_mz + mass_proton
+    temp$theor_mass <- temp$theor_mz + mass_proton
   }
 
-  #### (j) normalize relative abundances
+  #### (j) compute nominal mz
+  temp <- temp %>%
+    compute_nominal_mz()
+
+  #### (k) normalize relative abundances
   temp <- temp %>%
     compute_100norm_rel_abund()
 
-  #### (k) compute percent abundances
+  #### (l) compute percent abundances
   temp <- temp %>%
     compute_perc_abund()
 
-  #### (l) reorder columns
+  #### (m) reorder columns
   temp <- temp %>%
-    dplyr::select(.data$class_hetero, .data$chem_formula, .data$theor_MI_mass, tidyselect::everything())
+    dplyr::select(.data$class_hetero, .data$chem_formula, .data$theor_mass, .data$nominal_mz, tidyselect::everything())
 
-  #### (m) get_CHNOS_element_class
+  #### (n) get_CHNOS_element_class
   temp <- temp %>%
     get_CHNOS_element_class()
 
-  #### (n) compute DBE
+  #### (o) compute DBE
   temp <- temp %>%
     compute_DBE()
 
-  #### (o) compute DBE to C
+  #### (p) compute DBE to C
   temp <- temp %>%
     compute_DBEtoC()
 
-  #### (p) compute modified aromaticity index
+  #### (q) compute modified aromaticity index
   temp <- temp %>%
     compute_arom_index(AItype = "ModAI")
 
-  #### (q) compute most used elemental ratios
+  #### (r) compute most used elemental ratios
   temp <- temp %>%
     compute_elemental_ratios(num = "H") %>%
     compute_elemental_ratios(num = "O") %>%
     compute_elemental_ratios(num = "N")
 
-  #### (r) get 25% groups for plotting
+  #### (s) get 25% groups for plotting
   temp <- temp %>%
     get_25perc_groups()
 
-  #### (s) compute KMD_CH2 and z_CH2
+  #### (t) compute KMD_CH2 and z_CH2
   temp <- temp %>%
     compute_KMD_CH2()
 
-  #### (t) compute NOSC
+  #### (u) compute NOSC
   temp <- temp %>%
     compute_NOSC()
 
-  #### (u) compute mass defect
+  #### (v) compute mass defect
   temp <- temp %>%
     compute_mass_defect()
 
-  #### (v) order formulas by theor_MI_mass
+  #### (w) order formulas by theor_mass
   temp <- temp %>%
-    dplyr::arrange(.data$theor_MI_mass)
+    dplyr::arrange(.data$theor_mass)
 
-  #### (w) assign temp to sample_data
+  #### (x) assign temp to sample_data
   sample_data$assigned_formulas <- temp
 
 
   ## (3) generate table of all detected ions
   sample_data$all_detected_ions <- get_all_detected_ions(sample_data$no_hits,
                                                          sample_data$assigned_formulas)
+
+  sample_data$all_detected_ions <-  sample_data$all_detected_ions %>%
+    compute_nominal_mz()
 
   ## (4)return named list
   return(sample_data)

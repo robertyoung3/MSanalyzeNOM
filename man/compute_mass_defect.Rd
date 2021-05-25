@@ -7,7 +7,7 @@
 compute_mass_defect(data)
 }
 \arguments{
-\item{data}{a tibble containing the following column name: "theor_MI_mass"}
+\item{data}{a tibble containing the following column name: "theor_mass"}
 }
 \value{
 data with a new column containing the computed percent abundances
