@@ -34,7 +34,7 @@
 #'
 #' @export
 compute_2sample_peak_differences <- function (combined_samples, pos_1 = 1, pos_2 = 2){
-  common_col_names <- c("class_element", "class_hetero", "chem_formula", "theor_MI_mass",
+  common_col_names <- c("class_element", "class_hetero", "chem_formula", "theor_mass",
                         "theor_mz", "DBE", "C", "H", "N", "O", "S", "DBEtoC", "ModAI",
                         "HtoC", "OtoC", "NtoC", "KMD_CH2", "z_CH2", "NOSC", "mass_defect")
 
