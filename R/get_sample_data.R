@@ -14,10 +14,10 @@
 #' S, they comprise the default elements used for molecular formula assignment.
 #'
 #' If the form of the files exported by PetroOrg changes, this function will
-#' need revisions.
+#' need to be revised.
 #'
 #' @param file a character string containing the filename and path for the Excel
-#'   file created by PetroOrg&copy after molecular formula assignment
+#'   file created by PetroOrg after molecular formula assignment
 #' @param ion_technique a character string containing the MS ionization
 #'   technique used (default = NegESI)
 #' @param elements_used a character vector containing the elements that were used

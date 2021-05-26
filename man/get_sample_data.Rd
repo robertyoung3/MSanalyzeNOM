@@ -12,7 +12,7 @@ get_sample_data(
 }
 \arguments{
 \item{file}{a character string containing the filename and path for the Excel
-file created by PetroOrg&copy after molecular formula assignment}
+file created by PetroOrg after molecular formula assignment}
 
 \item{ion_technique}{a character string containing the MS ionization
 technique used (default = NegESI)}
@@ -39,5 +39,5 @@ matter (NOM) is generally comprised primarily of the elements C, H, N, O, and
 S, they comprise the default elements used for molecular formula assignment.
 
 If the form of the files exported by PetroOrg changes, this function will
-need revisions.
+need to be revised.
 }
